@@ -1,7 +1,5 @@
 package tn.esprit.projetPI.models;
 
-import tn.esprit.projetPI.models.InscriptionFormation;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -25,6 +23,9 @@ public class Formation implements Serializable {
     @Column(name = "schedule", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date schedule;
+
+    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL)
+    private List<Evaluation> evaluations;
 
     public Formation() {
     }
@@ -67,4 +68,11 @@ public class Formation implements Serializable {
         this.schedule = schedule;
     }
 
+    public List<Evaluation> getEvaluations() {
+        return evaluations;
+    }
+
+    public void setEvaluations(List<Evaluation> evaluations) {
+        this.evaluations = evaluations;
+    }
 }

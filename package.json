@@ -1,0 +1,13 @@
+{
+  "name": "projet-pi-back-3eme",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "FatmaFerchichi <135468163+FatmaFerchichi@users.noreply.github.com>",
+  "license": "ISC",
+  "repository": "https://github.com/melek6/projet-PI-Back-3eme.git"
+}
