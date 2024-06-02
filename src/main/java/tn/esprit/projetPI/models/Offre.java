@@ -88,4 +88,12 @@ public class Offre {
     @ManyToOne
     @JoinColumn(name = "user_id") // Nom de la colonne dans la table de l'offre faisant référence à l'utilisateur
     private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

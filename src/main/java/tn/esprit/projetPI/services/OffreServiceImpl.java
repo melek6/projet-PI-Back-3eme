@@ -21,8 +21,17 @@ public class OffreServiceImpl implements OffreService{
     }
 
     @Override
-    public Offre updateOffre(Offre offre) {
-        return offreRepository.save(offre);
+    public Offre updateOffre(int id, Offre offre) {
+        Optional<Offre> optionalOffre = offreRepository.findById(id);
+        if (optionalOffre.isPresent()) {
+            Offre existingOffre = optionalOffre.get();
+            existingOffre.setTitle(offre.getTitle());
+            existingOffre.setDescription(offre.getDescription());
+            // Mettre à jour d'autres champs si nécessaire
+            return offreRepository.save(existingOffre);
+        } else {
+            throw new RuntimeException("Offre not found with id " + id);
+        }
     }
 
     @Override

@@ -59,4 +59,12 @@ public class Candidature {
     @ManyToOne
     @JoinColumn(name = "offre_id") // Nom de la colonne dans la table de candidature faisant référence à l'offre
     private Offre offre;
+
+    public Offre getOffre() {
+        return offre;
+    }
+
+    public void setOffre(Offre offre) {
+        this.offre = offre;
+    }
 }
