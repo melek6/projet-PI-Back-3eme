@@ -13,19 +13,41 @@ public class Evaluation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "score")
-    private float score;
+    @Column(name = "training_title")
+    private String trainingTitle;
 
     @Column(name = "date")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    public Evaluation() {
+    @Column(name = "location")
+    private String location;
+
+    @Column(name = "trainer")
+    private String trainer;
+
+    @Column(name = "participant")
+    private String participant;
+
+
+
+    @Column(name = "comments")
+    private String comments;
+
+    @Column(name = "score")
+    private float score; // Ajout de la propriété score
+
+    public Evaluation(String trainingTitle, Date date, String location, String trainer, String participant, int trainingScore, String comments, float score) {
+        this.trainingTitle = trainingTitle;
+        this.date = date;
+        this.location = location;
+        this.trainer = trainer;
+        this.participant = participant;
+        this.comments = comments;
+        this.score = score;
     }
 
-    public Evaluation(float score, Date date) {
-        this.score = score;
-        this.date = date;
+    public Evaluation() {
+
     }
 
     public int getId() {
@@ -36,6 +58,55 @@ public class Evaluation implements Serializable {
         this.id = id;
     }
 
+    public String getTrainingTitle() {
+        return trainingTitle;
+    }
+
+    public void setTrainingTitle(String trainingTitle) {
+        this.trainingTitle = trainingTitle;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(String trainer) {
+        this.trainer = trainer;
+    }
+
+    public String getParticipant() {
+        return participant;
+    }
+
+    public void setParticipant(String participant) {
+        this.participant = participant;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
     public float getScore() {
         return score;
     }
@@ -44,11 +115,10 @@ public class Evaluation implements Serializable {
         this.score = score;
     }
 
-    public Date getDate() {
-        return date;
-    }
+    @ManyToOne
+    @JoinColumn(name = "formation_id")
+    private Formation formation;
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setFormation(Formation formation) {
     }
 }
