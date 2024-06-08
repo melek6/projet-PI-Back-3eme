@@ -6,5 +6,5 @@ import tn.esprit.projetPI.models.Reponse;
 
 @Repository
 
-public interface ReponseRepository extends JpaRepository<Reponse, Integer> {
+public interface ReponseRepository extends JpaRepository<Reponse, Long> {
 }

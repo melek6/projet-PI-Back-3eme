@@ -7,9 +7,9 @@ import java.util.List;
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String content ;
-    private String type ;
+    private Long id;
+    private String content;
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "quiz_id")
@@ -18,11 +18,11 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Reponse> reponses;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -42,14 +42,6 @@ public class Question {
         this.type = type;
     }
 
-    public Quiz getQuiz() {
-        return quiz;
-    }
-
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
-    }
-
     public List<Reponse> getReponses() {
         return reponses;
     }
@@ -57,5 +49,4 @@ public class Question {
     public void setReponses(List<Reponse> reponses) {
         this.reponses = reponses;
     }
-
 }

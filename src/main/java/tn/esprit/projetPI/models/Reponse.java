@@ -6,7 +6,7 @@ import javax.persistence.*;
 public class Reponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String content;
     private Boolean iscorrect;
 
@@ -15,7 +15,7 @@ public class Reponse {
     private Question question;
 
     // Getters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -27,12 +27,8 @@ public class Reponse {
         return iscorrect;
     }
 
-    public Question getQuestion() {
-        return question;
-    }
-
     // Setters
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -42,9 +38,5 @@ public class Reponse {
 
     public void setIscorrect(Boolean iscorrect) {
         this.iscorrect = iscorrect;
-    }
-
-    public void setQuestion(Question question) {
-        this.question = question;
     }
 }

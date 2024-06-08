@@ -8,26 +8,32 @@ import tn.esprit.projetPI.repository.ReponseRepository;
 import java.util.List;
 import java.util.Optional;
 
-    @Service
-    public class ReponseImpl {
-        @Autowired
-        private ReponseRepository reponseRepository;
+@Service
+public class ReponseImpl {
+    @Autowired
+    private ReponseRepository reponseRepository;
 
-        public Reponse saveOrUpdateReponse(Reponse reponse) {
-            return reponseRepository.save(reponse);
-        }
-
-        public Optional<Reponse> getReponseById(Integer id) {
-            return reponseRepository.findById(id);
-        }
-
-        public List<Reponse> getAllReponses() {
-            return reponseRepository.findAll();
-        }
-
-        public void deleteReponseById(Integer id) {
-            reponseRepository.deleteById(id);
-        }
+    public Reponse saveOrUpdateReponse(Reponse reponse) {
+        return reponseRepository.save(reponse);
     }
 
+    public Optional<Reponse> getReponseById(Long id) {
+        return reponseRepository.findById(id);
+    }
 
+    public List<Reponse> getAllReponses() {
+        return reponseRepository.findAll();
+    }
+
+    public void deleteReponseById(Long id) {
+        reponseRepository.deleteById(id);
+    }
+
+    public Optional<Reponse> updateReponse(Long id, Reponse reponseDetails) {
+        return reponseRepository.findById(id).map(reponse -> {
+            reponse.setContent(reponseDetails.getContent());
+            reponse.setIscorrect(reponseDetails.getIscorrect());
+            return reponseRepository.save(reponse);
+        });
+    }
+}
