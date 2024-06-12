@@ -40,6 +40,10 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Set<Project> projects;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private Set<Formation> formations;
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(	name = "user_roles", 
 				joinColumns = @JoinColumn(name = "user_id"), 
