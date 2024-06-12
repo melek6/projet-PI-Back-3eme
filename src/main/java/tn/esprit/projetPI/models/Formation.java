@@ -1,5 +1,7 @@
 package tn.esprit.projetPI.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -20,22 +22,50 @@ public class Formation implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "schedule", nullable = false)
+    @Column(name = "start_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date schedule;
+    private Date startDate;
+
+    @Column(name = "end_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date endDate;
+
+    @Column(name = "location")
+    private String location;
+
+    @Column(name = "price", nullable = false)
+    private double price;
+
+    @Column(name = "number_of_hours", nullable = false)
+    private int numberOfHours;
+
+    @Enumerated(EnumType.STRING)
+    private FormationCategory category;
 
     @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL)
     private List<Evaluation> evaluations;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    private User user;
+
     public Formation() {
     }
 
-    public Formation(String title, String description, Date schedule) {
+    public Formation(String title, String description, Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user) {
         this.title = title;
         this.description = description;
-        this.schedule = schedule;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.location = location;
+        this.price = price;
+        this.numberOfHours = numberOfHours;
+        this.category = category;
+        this.user = user;
     }
 
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -60,12 +90,52 @@ public class Formation implements Serializable {
         this.description = description;
     }
 
-    public Date getSchedule() {
-        return schedule;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setSchedule(Date schedule) {
-        this.schedule = schedule;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getNumberOfHours() {
+        return numberOfHours;
+    }
+
+    public void setNumberOfHours(int numberOfHours) {
+        this.numberOfHours = numberOfHours;
+    }
+
+    public FormationCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(FormationCategory category) {
+        this.category = category;
     }
 
     public List<Evaluation> getEvaluations() {
@@ -74,5 +144,13 @@ public class Formation implements Serializable {
 
     public void setEvaluations(List<Evaluation> evaluations) {
         this.evaluations = evaluations;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
