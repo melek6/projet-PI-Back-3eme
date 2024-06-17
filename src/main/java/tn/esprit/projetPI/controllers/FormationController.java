@@ -25,6 +25,7 @@ public class FormationController {
     @GetMapping
     public List<Formation> getAllFormations() {
         return formationService.retrieveAllFormations();
+
     }
 
     @GetMapping("/{id}")
