@@ -16,25 +16,24 @@ public class Formation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "title", nullable = false)
+
     private String title;
-    @Column(name = "best_seller")
+
     private boolean bestSeller;
 
-    @Column(name = "new_formation")
+
     private boolean newFormation;
-    @Column(name = "description")
+
     private String description;
 
-    @Column(name = "start_date", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    private Date schedule;
+    @Temporal(TemporalType.DATE)
     private Date startDate;
 
-    @Column(name = "end_date", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date endDate;
 
-    @Column(name = "location")
+
     private String location;
 
     @Column(name = "price", nullable = false)
@@ -57,9 +56,10 @@ public class Formation implements Serializable {
     public Formation() {
     }
 
-    public Formation(String title, String description, Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user) {
+    public Formation(String title, String description, Date schedule,Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user,boolean newFormation,boolean bestSeller) {
         this.title = title;
         this.description = description;
+        this.schedule = schedule;
         this.startDate = startDate;
         this.endDate = endDate;
         this.location = location;
@@ -114,6 +114,15 @@ public class Formation implements Serializable {
         this.endDate = endDate;
     }
 
+    // Getter for schedule
+    public Date getSchedule() {
+        return schedule;
+    }
+
+    // Setter for schedule
+    public void setSchedule(Date schedule) {
+        this.schedule = schedule;
+    }
     public String getLocation() {
         return location;
     }
