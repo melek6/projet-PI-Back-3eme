@@ -18,7 +18,11 @@ public class Formation implements Serializable {
 
     @Column(name = "title", nullable = false)
     private String title;
+    @Column(name = "best_seller")
+    private boolean bestSeller;
 
+    @Column(name = "new_formation")
+    private boolean newFormation;
     @Column(name = "description")
     private String description;
 
@@ -63,9 +67,13 @@ public class Formation implements Serializable {
         this.numberOfHours = numberOfHours;
         this.category = category;
         this.user = user;
+        this.bestSeller = bestSeller;
+        this.newFormation = newFormation;
     }
 
     // Getters and Setters
+
+
     public int getId() {
         return id;
     }
@@ -152,5 +160,21 @@ public class Formation implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isBestSeller() {
+        return bestSeller;
+    }
+
+    public void setBestSeller(boolean bestSeller) {
+        this.bestSeller = bestSeller;
+    }
+
+    public boolean isNewFormation() {
+        return newFormation;
+    }
+
+    public void setNewFormation(boolean newFormation) {
+        this.newFormation = newFormation;
     }
 }

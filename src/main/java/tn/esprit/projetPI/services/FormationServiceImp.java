@@ -71,4 +71,14 @@ public class FormationServiceImp implements FormationService {
             throw new ResourceNotFoundException("Formation not found with id: " + formationId);
         }
     }
+
+    @Override
+    public List<Formation> getBestSellerFormations() {
+        return formationRepository.findByBestSeller(true);
+    }
+
+    @Override
+    public List<Formation> getNewFormations() {
+        return formationRepository.findByNewFormation(true);
+    }
 }

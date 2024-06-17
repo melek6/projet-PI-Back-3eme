@@ -15,4 +15,7 @@ public interface FormationService {
 
     Evaluation addEvaluationToFormation(int formationId, Evaluation evaluation);
     List<Evaluation> getEvaluationsForFormation(int formationId);
+
+    List<Formation> getBestSellerFormations();
+    List<Formation> getNewFormations();
 }
