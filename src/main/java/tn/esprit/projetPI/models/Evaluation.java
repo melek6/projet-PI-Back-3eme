@@ -28,15 +28,13 @@ public class Evaluation implements Serializable {
     @Column(name = "participant")
     private String participant;
 
-
-
     @Column(name = "comments")
     private String comments;
 
-    @Column(name = "score")
-    private float score; // Ajout de la propriété score
+    @Column(nullable = true) // allows null values in the database
+    private Integer score; // Use Integer instead of int
 
-    public Evaluation(String trainingTitle, Date date, String location, String trainer, String participant, int trainingScore, String comments, float score) {
+    public Evaluation(String trainingTitle, Date date, String location, String trainer, String participant, String comments, Integer score) {
         this.trainingTitle = trainingTitle;
         this.date = date;
         this.location = location;
@@ -47,8 +45,9 @@ public class Evaluation implements Serializable {
     }
 
     public Evaluation() {
-
     }
+
+    // Getters and setters
 
     public int getId() {
         return id;
@@ -69,7 +68,6 @@ public class Evaluation implements Serializable {
     public Date getDate() {
         return date;
     }
-
 
     public void setDate(Date date) {
         this.date = date;
@@ -107,11 +105,11 @@ public class Evaluation implements Serializable {
         this.comments = comments;
     }
 
-    public float getScore() {
+    public Integer getScore() { // Change return type to Integer
         return score;
     }
 
-    public void setScore(float score) {
+    public void setScore(Integer score) { // Change parameter type to Integer
         this.score = score;
     }
 
@@ -120,5 +118,6 @@ public class Evaluation implements Serializable {
     private Formation formation;
 
     public void setFormation(Formation formation) {
+        this.formation = formation;
     }
 }
