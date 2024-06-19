@@ -3,7 +3,6 @@ package tn.esprit.projetPI.services;
 import tn.esprit.projetPI.models.Proposition;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IPropositionService {
     List<Proposition> retrieveAllPropositions();
@@ -11,6 +10,6 @@ public interface IPropositionService {
     Proposition updateProposition(Long id, Proposition proposition);
     void deleteProposition(Long id);
     List<Proposition> getPropositionsByProjectId(Long projectId);
-    Proposition approveProposition(Long id);
+    Proposition approveProposition(Long id, String username);
     Proposition declineProposition(Long id);
 }

@@ -62,7 +62,9 @@ public class PropositionController {
 
     @PostMapping("/{id}/approve")
     public Proposition approveProposition(@PathVariable Long id) {
-        return propositionService.approveProposition(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return propositionService.approveProposition(id, username);
     }
 
     @PostMapping("/{id}/decline")
