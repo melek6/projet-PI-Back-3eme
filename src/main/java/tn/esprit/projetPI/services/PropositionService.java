@@ -3,7 +3,9 @@ package tn.esprit.projetPI.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.models.Proposition;
+import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.repository.PropositionRepository;
+import tn.esprit.projetPI.repository.ProjectRepository;
 
 import java.util.List;
 
@@ -12,6 +14,9 @@ public class PropositionService implements IPropositionService {
 
     @Autowired
     private PropositionRepository propositionRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @Override
     public List<Proposition> retrieveAllPropositions() {
@@ -52,8 +57,14 @@ public class PropositionService implements IPropositionService {
     }
 
     @Override
-    public Proposition approveProposition(Long id) {
+    public Proposition approveProposition(Long id, String username) {
         Proposition proposition = propositionRepository.findById(id).orElseThrow(() -> new RuntimeException("Proposition not found"));
+        Project project = proposition.getProject();
+
+        if (!project.getUser().getUsername().equals(username)) {
+            throw new RuntimeException("You are not authorized to approve this proposition.");
+        }
+
         proposition.setStatus("APPROVED");
         return propositionRepository.save(proposition);
     }
