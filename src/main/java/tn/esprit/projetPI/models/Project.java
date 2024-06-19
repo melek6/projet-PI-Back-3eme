@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -30,6 +32,9 @@ public class Project implements Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private Set<Proposition> propositions = new HashSet<>();
 
     public Project() {
     }
@@ -107,5 +112,13 @@ public class Project implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Set<Proposition> getPropositions() {
+        return propositions;
+    }
+
+    public void setPropositions(Set<Proposition> propositions) {
+        this.propositions = propositions;
     }
 }
