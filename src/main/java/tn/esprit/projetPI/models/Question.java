@@ -18,6 +18,16 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Reponse> reponses;
 
+    // Getter and Setter for quiz
+    public Quiz getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
+    }
+
+    // Other getters and setters
     public Long getId() {
         return id;
     }

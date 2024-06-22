@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.projetPI.models.Question;
+import tn.esprit.projetPI.models.Quiz;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,14 @@ public class QuestionServiceImpl {
 
     @PostMapping
     public ResponseEntity<Question> createOrUpdateQuestion(@RequestBody Question question) {
+        // Suppose quizId is the ID of the quiz to which this question belongs
+        Long quizId = question.getQuiz().getId(); // Assuming you have a getter for Quiz in Question entity
+        Quiz quiz = new Quiz();
+        quiz.setId(quizId);
+
+        // Set the quiz for the question
+        question.setQuiz(quiz);
+
         Question savedQuestion = questionService.saveOrUpdateQuestion(question);
         return new ResponseEntity<>(savedQuestion, HttpStatus.CREATED);
     }
