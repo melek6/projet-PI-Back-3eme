@@ -1,6 +1,7 @@
 package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import tn.esprit.projetPI.controllers.ResourceNotFoundException;
@@ -8,6 +9,7 @@ import tn.esprit.projetPI.models.Evaluation;
 import tn.esprit.projetPI.models.Formation;
 import tn.esprit.projetPI.repository.EvaluationRepository;
 import tn.esprit.projetPI.repository.FormationRepository;
+import tn.esprit.projetPI.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,8 @@ public class FormationServiceImp implements FormationService {
 
     private final FormationRepository formationRepository;
     private final EvaluationRepository evaluationRepository;
+    @Autowired
+    private  UserRepository userRepository;
 
     @Autowired
     public FormationServiceImp(FormationRepository formationRepository, EvaluationRepository evaluationRepository) {
@@ -31,6 +35,17 @@ public class FormationServiceImp implements FormationService {
 
     @Override
     public Formation addFormation(Formation formation) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Long userId;
+        if (principal instanceof UserDetailsImpl) {
+            userId = ((UserDetailsImpl) principal).getId();
+        } else {
+            throw new RuntimeException("L'utilisateur authentifié n'est pas trouvé ou n'est pas valide.");
+        }
+
+
+        formation.setUser(userRepository.getOne(userId));
         return formationRepository.save(formation);
     }
 
