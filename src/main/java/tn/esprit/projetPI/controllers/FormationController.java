@@ -1,9 +1,12 @@
 package tn.esprit.projetPI.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.projetPI.models.Formation;
 import tn.esprit.projetPI.models.Evaluation;
+import tn.esprit.projetPI.models.FormationCategory;
 import tn.esprit.projetPI.services.FormationService;
 import tn.esprit.projetPI.services.EvaluationService;
 
@@ -65,5 +68,17 @@ public class FormationController {
         Formation formation = formationService.retrieveFormation(formationId).orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
         evaluation.setFormation(formation);
         return evaluationService.addEvaluation(evaluation);
+    }
+    @PostMapping("/category/{category}")
+    public Formation createFormationByCategory(@RequestBody Formation formation, @PathVariable FormationCategory category) {
+        return formationService.addFormationByCategory(formation, category);
+    }
+    @GetMapping("/categories")
+    public ResponseEntity<FormationCategory[]> getAllCategories() {
+        return new ResponseEntity<>(FormationCategory.values(), HttpStatus.OK);
+    }
+    @GetMapping("/category/{category}")
+    public List<Formation> getFormationsByCategory(@PathVariable FormationCategory category) {
+        return formationService.getFormationsByCategory(category);
     }
 }
