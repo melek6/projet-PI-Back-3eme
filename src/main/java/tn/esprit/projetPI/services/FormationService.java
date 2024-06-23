@@ -2,6 +2,7 @@ package tn.esprit.projetPI.services;
 
 import tn.esprit.projetPI.models.Evaluation;
 import tn.esprit.projetPI.models.Formation;
+import tn.esprit.projetPI.models.FormationCategory;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +19,7 @@ public interface FormationService {
 
     List<Formation> getBestSellerFormations();
     List<Formation> getNewFormations();
+    Formation addFormationByCategory(Formation formation, FormationCategory category);
+
+    List<Formation> getFormationsByCategory(FormationCategory category);
 }

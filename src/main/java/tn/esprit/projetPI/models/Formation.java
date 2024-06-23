@@ -103,7 +103,7 @@ public class Formation implements Serializable {
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+        this.startDate = startDate; 
     }
 
     public Date getEndDate() {

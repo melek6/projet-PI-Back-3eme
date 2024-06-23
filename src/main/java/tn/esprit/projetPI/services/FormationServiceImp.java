@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.controllers.ResourceNotFoundException;
 import tn.esprit.projetPI.models.Evaluation;
 import tn.esprit.projetPI.models.Formation;
+import tn.esprit.projetPI.models.FormationCategory;
 import tn.esprit.projetPI.repository.EvaluationRepository;
 import tn.esprit.projetPI.repository.FormationRepository;
 import tn.esprit.projetPI.repository.UserRepository;
@@ -47,6 +48,12 @@ public class FormationServiceImp implements FormationService {
 
         formation.setUser(userRepository.getOne(userId));
         return formationRepository.save(formation);
+    }
+
+    @Override
+    public Formation addFormationByCategory(Formation formation, FormationCategory category) {
+        formation.setCategory(category);
+        return addFormation(formation);
     }
 
     @Override
@@ -95,5 +102,9 @@ public class FormationServiceImp implements FormationService {
     @Override
     public List<Formation> getNewFormations() {
         return formationRepository.findByNewFormation(true);
+    }
+    @Override
+    public List<Formation> getFormationsByCategory(FormationCategory category) {
+        return formationRepository.findByCategory(category);
     }
 }
