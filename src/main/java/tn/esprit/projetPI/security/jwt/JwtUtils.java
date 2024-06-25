@@ -1,7 +1,9 @@
 package tn.esprit.projetPI.security.jwt;
 
 import java.util.Date;
+import java.util.List;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import tn.esprit.projetPI.services.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,19 +23,23 @@ public class JwtUtils {
 	@Value("${app.jwtExpirationMs}")
 	private int jwtExpirationMs;
 
+
+
 	public String generateJwtToken(Authentication authentication) {
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		return generateJwtToken(userDetails);
+	}
 
-		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
+	public String generateJwtToken(UserDetails userDetails) {
 		return Jwts.builder()
-				.setSubject((userPrincipal.getUsername()))
+				.setSubject(userDetails.getUsername())
 				.setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+				.setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
 				.signWith(SignatureAlgorithm.HS512, jwtSecret)
 				.compact();
 	}
 
-	public String getUserNameFromJwtToken(String token) {
+	public String getUsernameFromJwtToken(String token) {
 		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
 	}
 
@@ -41,18 +47,17 @@ public class JwtUtils {
 		try {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
 			return true;
-		} catch (SignatureException e) {
-			logger.error("Invalid JWT signature: {}", e.getMessage());
-		} catch (MalformedJwtException e) {
-			logger.error("Invalid JWT token: {}", e.getMessage());
-		} catch (ExpiredJwtException e) {
-			logger.error("JWT token is expired: {}", e.getMessage());
-		} catch (UnsupportedJwtException e) {
-			logger.error("JWT token is unsupported: {}", e.getMessage());
-		} catch (IllegalArgumentException e) {
-			logger.error("JWT claims string is empty: {}", e.getMessage());
+		} catch (Exception e) {
+			return false;
 		}
-
-		return false;
 	}
+	public Claims getAllClaimsFromToken(String token) {
+		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+	}
+
+	public List<String> getRolesFromJwtToken(String token) {
+		Claims claims = getAllClaimsFromToken(token);
+		return claims.get("roles", List.class);
+	}
+
 }

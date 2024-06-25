@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,6 +22,8 @@ import tn.esprit.projetPI.security.jwt.AuthEntryPointJwt;
 import tn.esprit.projetPI.security.jwt.AuthTokenFilter;
 import tn.esprit.projetPI.services.UserDetailsServiceImpl;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -34,6 +38,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
 		return new AuthTokenFilter();
+	}
+
+	@Bean
+	public AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(userDetailsService);
+		authProvider.setPasswordEncoder(passwordEncoder());
+		return authProvider;
 	}
 
 	@Bean
@@ -70,12 +82,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests()
+				.antMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll() // Autoriser l'accès sans authentification
 				.antMatchers("/api/auth/**").permitAll()
-				.antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll() // Swagger UI and API docs
-				.anyRequest().authenticated();
+				.antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+				.antMatchers("/password-reset/**").permitAll() // Autoriser l'accès sans authentification
+				.antMatchers("/api/admin/**").hasRole("ADMIN") // S'assurer que les endpoints admin sont accessibles uniquement aux admins
+				.anyRequest().authenticated()
+				.and()
+				.oauth2Login()
+				.loginPage("/login") // Page de login personnalisée
+				.defaultSuccessUrl("/home", true)
+				.and()
+				.logout()
+				.logoutUrl("/api/auth/logout")
+				.logoutSuccessUrl("http://localhost:4200/#/login")
+				.invalidateHttpSession(true)
+				.deleteCookies("JSESSIONID")
+				.logoutSuccessHandler((request, response, authentication) -> {
+					response.setStatus(HttpServletResponse.SC_OK);
+					response.getWriter().flush();
+				});
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
-
-
 }

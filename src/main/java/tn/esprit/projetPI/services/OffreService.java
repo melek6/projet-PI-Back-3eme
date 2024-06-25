@@ -6,5 +6,6 @@ public interface OffreService {
     Offre updateOffre(int id, Offre offre);
     void deleteOffre(int id);
     Offre getOffreById(int id);
+    List<Offre> getOffreByIduser(int id);
     List<Offre> getAllOffres();
 }
