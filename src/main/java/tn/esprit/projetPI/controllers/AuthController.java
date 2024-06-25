@@ -1,15 +1,21 @@
 package tn.esprit.projetPI.controllers;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.web.bind.annotation.*;
 import tn.esprit.projetPI.repository.RoleRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.security.jwt.JwtUtils;
+import tn.esprit.projetPI.services.EmailService;
 import tn.esprit.projetPI.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import tn.esprit.projetPI.models.ERole;
 import tn.esprit.projetPI.models.Role;
@@ -50,7 +51,14 @@ public class AuthController {
 
 	@Autowired
     JwtUtils jwtUtils;
+	@Autowired
+	private EmailService emailService;
 
+	@GetMapping("/send-email")
+	public String sendEmail(@RequestParam String to, @RequestParam String subject, @RequestParam String text) {
+		emailService.sendSimpleEmail(to, subject, text);
+		return "Email sent successfully";
+	}
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -126,4 +134,26 @@ public class AuthController {
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
+
+
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.getSession().invalidate();  // Invalidate the session
+		SecurityContextHolder.clearContext();  // Clear the security context
+
+		// Clear cookies
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				cookie.setValue("");
+				cookie.setPath("/");
+				cookie.setMaxAge(0);
+				response.addCookie(cookie);
+			}
+		}
+
+		return ResponseEntity.ok(new MessageResponse("User logged out successfully!"));
+	}
+
+
 }

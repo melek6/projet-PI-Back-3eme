@@ -1,8 +1,10 @@
 package tn.esprit.projetPI.services;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.models.Offre;
 import tn.esprit.projetPI.repository.OffreRepository;
+import tn.esprit.projetPI.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -14,9 +16,21 @@ public class OffreServiceImpl implements OffreService{
 
     @Autowired
     private OffreRepository offreRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public Offre saveOffre(Offre offre) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Extraire l'ID de l'utilisateur connecté
+        Long userId;
+        if (principal instanceof UserDetailsImpl) {
+            userId = ((UserDetailsImpl) principal).getId();
+        } else {
+            throw new RuntimeException("L'utilisateur authentifié n'est pas trouvé ou n'est pas valide.");
+        }
+        offre.setUser(userRepository.getOne(userId));
         return offreRepository.save(offre);
     }
 
@@ -43,6 +57,21 @@ public class OffreServiceImpl implements OffreService{
     public Offre getOffreById(int id) {
         Optional<Offre> optionalOffre = offreRepository.findById(id);
         return optionalOffre.orElse(null);
+    }
+
+    @Override
+    public List<Offre> getOffreByIduser(int id) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Extraire l'ID de l'utilisateur connecté
+        Long userId;
+        if (principal instanceof UserDetailsImpl) {
+            userId = ((UserDetailsImpl) principal).getId();
+        } else {
+            throw new RuntimeException("L'utilisateur authentifié n'est pas trouvé ou n'est pas valide.");
+        }
+
+        return offreRepository.findByUserId(userId);
     }
 
     @Override

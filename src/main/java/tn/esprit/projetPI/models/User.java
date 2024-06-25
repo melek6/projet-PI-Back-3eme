@@ -33,7 +33,7 @@ public class User {
 	@Size(max = 50)
 	@Email
 	private String email;
-
+	private boolean blocked;
 	@NotBlank
 	@Size(max = 120)
 	private String password;
@@ -106,5 +106,11 @@ public class User {
 		this.roles = roles;
 	}
 
+	public boolean isBlocked() {
+		return blocked;
+	}
 
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
 }
