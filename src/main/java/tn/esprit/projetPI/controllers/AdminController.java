@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.projetPI.models.ERole;
 import tn.esprit.projetPI.models.User;
@@ -19,7 +20,8 @@ import java.util.Set;
 @PreAuthorize("hasRole('ADMIN')")
 
 public class AdminController {
-
+    @Autowired
+    PasswordEncoder encoder;
     @Autowired
     private UserServiceint userService;
     @PostMapping("/addUser")
@@ -42,9 +44,14 @@ public class AdminController {
             roles.add(ERole.ROLE_USER);
         }
 
-        User user = userService.addUser(userRequest.getUsername(), userRequest.getEmail(), userRequest.getPassword(), roles);
+        User user = userService.addUser(
+                userRequest.getUsername(),
+                userRequest.getEmail(),
+                encoder.encode(userRequest.getPassword()),
+                roles);
         return ResponseEntity.ok(user);
     }
+
 
 
 
