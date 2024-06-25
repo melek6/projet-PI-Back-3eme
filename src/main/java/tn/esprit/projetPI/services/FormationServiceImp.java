@@ -1,9 +1,10 @@
 package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.controllers.ResourceNotFoundException;
 import tn.esprit.projetPI.models.Evaluation;
 import tn.esprit.projetPI.models.Formation;
@@ -12,6 +13,10 @@ import tn.esprit.projetPI.repository.EvaluationRepository;
 import tn.esprit.projetPI.repository.FormationRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +25,12 @@ public class FormationServiceImp implements FormationService {
 
     private final FormationRepository formationRepository;
     private final EvaluationRepository evaluationRepository;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     @Autowired
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     public FormationServiceImp(FormationRepository formationRepository, EvaluationRepository evaluationRepository) {
@@ -44,7 +53,6 @@ public class FormationServiceImp implements FormationService {
         } else {
             throw new RuntimeException("L'utilisateur authentifié n'est pas trouvé ou n'est pas valide.");
         }
-
 
         formation.setUser(userRepository.getOne(userId));
         return formationRepository.save(formation);
@@ -103,8 +111,38 @@ public class FormationServiceImp implements FormationService {
     public List<Formation> getNewFormations() {
         return formationRepository.findByNewFormation(true);
     }
+
     @Override
     public List<Formation> getFormationsByCategory(FormationCategory category) {
         return formationRepository.findByCategory(category);
+    }
+
+    @Override
+    public String uploadPlanningFile(int formationId, MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new RuntimeException("Veuillez sélectionner un fichier à télécharger");
+        }
+
+        try {
+            // Créer le répertoire s'il n'existe pas
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Sauvegarder le fichier
+            String fileName = file.getOriginalFilename();
+            Path filePath = uploadPath.resolve(fileName);
+            file.transferTo(filePath.toFile());
+
+            // Mettre à jour l'entité Formation avec le chemin du fichier
+            Formation formation = retrieveFormation(formationId).orElseThrow(() -> new ResourceNotFoundException("Formation non trouvée"));
+            formation.setPlanning(filePath.toString());
+            formationRepository.save(formation);
+
+            return "Fichier téléchargé avec succès";
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors du téléchargement du fichier", e);
+        }
     }
 }
