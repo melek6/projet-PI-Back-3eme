@@ -1,7 +1,9 @@
 package tn.esprit.projetPI.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.models.Evaluation;
 import tn.esprit.projetPI.models.Formation;
+import tn.esprit.projetPI.models.FormationCategory;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +17,11 @@ public interface FormationService {
 
     Evaluation addEvaluationToFormation(int formationId, Evaluation evaluation);
     List<Evaluation> getEvaluationsForFormation(int formationId);
+
+    List<Formation> getBestSellerFormations();
+    List<Formation> getNewFormations();
+    Formation addFormationByCategory(Formation formation, FormationCategory category);
+
+    List<Formation> getFormationsByCategory(FormationCategory category);
+    String uploadPlanningFile(int formationId, MultipartFile file);
 }

@@ -1,12 +1,21 @@
 package tn.esprit.projetPI.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.models.Formation;
 import tn.esprit.projetPI.models.Evaluation;
+import tn.esprit.projetPI.models.FormationCategory;
 import tn.esprit.projetPI.services.FormationService;
 import tn.esprit.projetPI.services.EvaluationService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -15,6 +24,9 @@ public class FormationController {
 
     private final FormationService formationService;
     private final EvaluationService evaluationService;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @Autowired
     public FormationController(FormationService formationService, EvaluationService evaluationService) {
@@ -48,6 +60,15 @@ public class FormationController {
         formationService.deleteFormation(id);
     }
 
+    @GetMapping("/bestsellers")
+    public List<Formation> getBestSellerFormations() {
+        return formationService.getBestSellerFormations();
+    }
+
+    @GetMapping("/new")
+    public List<Formation> getNewFormations() {
+        return formationService.getNewFormations();
+    }
 
     @PostMapping("/{formationId}/evaluations")
     public Evaluation addEvaluationToFormation(@PathVariable int formationId, @RequestBody Evaluation evaluation) {
@@ -55,4 +76,43 @@ public class FormationController {
         evaluation.setFormation(formation);
         return evaluationService.addEvaluation(evaluation);
     }
-}
+
+    @PostMapping("/category/{category}")
+    public Formation createFormationByCategory(@RequestBody Formation formation, @PathVariable FormationCategory category) {
+        return formationService.addFormationByCategory(formation, category);
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<FormationCategory[]> getAllCategories() {
+        return new ResponseEntity<>(FormationCategory.values(), HttpStatus.OK);
+    }
+
+    @GetMapping("/category/{category}")
+    public List<Formation> getFormationsByCategory(@PathVariable FormationCategory category) {
+        return formationService.getFormationsByCategory(category);
+    }
+
+    @PostMapping("/{formationId}/uploadPlanning")
+    public ResponseEntity<String> uploadPlanning(@PathVariable int formationId, @RequestParam("file") MultipartFile file) {
+        Formation formation = formationService.retrieveFormation(formationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+
+        if (file.isEmpty()) {
+            return new ResponseEntity<>("Please select a file to upload.", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            byte[] bytes = file.getBytes();
+            Path path = Paths.get(uploadDir + file.getOriginalFilename());
+            Files.write(path, bytes);
+
+            formation.setPlanning(file.getOriginalFilename());
+            formationService.updateFormation(formation);
+
+            return new ResponseEntity<>("You successfully uploaded '" + file.getOriginalFilename() + "'", HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Failed to upload '" + file.getOriginalFilename() + "'", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    }

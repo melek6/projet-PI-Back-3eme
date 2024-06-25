@@ -8,7 +8,7 @@ import tn.esprit.projetPI.services.EvaluationService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/evaluations")
+@RequestMapping("/api/evalformation")
 public class EvaluationController {
 
     private final EvaluationService evaluationService;
