@@ -7,6 +7,7 @@ public enum FormationCategory {
     IT_Software,
     Personal_Development,
     Design,
-    Teaching_Academics
+    Teaching_Academics,
+    Other
 
 }

@@ -1,5 +1,6 @@
 package tn.esprit.projetPI.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.models.Evaluation;
 import tn.esprit.projetPI.models.Formation;
 import tn.esprit.projetPI.models.FormationCategory;
@@ -22,4 +23,5 @@ public interface FormationService {
     Formation addFormationByCategory(Formation formation, FormationCategory category);
 
     List<Formation> getFormationsByCategory(FormationCategory category);
+    String uploadPlanningFile(int formationId, MultipartFile file);
 }
