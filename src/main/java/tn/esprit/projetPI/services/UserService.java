@@ -29,7 +29,7 @@ public class UserService implements UserServiceint{
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
-        user.setPassword(encoder.encode(password));
+        user.setPassword(password);
 
         Set<Role> userRoles = new HashSet<>();
         for (ERole role : roles) {
@@ -37,6 +37,7 @@ public class UserService implements UserServiceint{
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             userRoles.add(userRole);
         }
+
         user.setRoles(userRoles);
         return userRepository.save(user);
     }
