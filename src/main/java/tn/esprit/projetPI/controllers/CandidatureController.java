@@ -50,10 +50,15 @@ public class CandidatureController {
     public ResponseEntity<Candidature> createCandidature(
             @RequestParam("nom") String nom,
             @RequestParam("prenom") String prenom,
-            @RequestParam("offre_id") int offreId,
-            @RequestParam("cv") MultipartFile cv) {
+            @RequestParam("cv") MultipartFile cv,
+            @RequestParam(value = "offre_id", required = false) Integer offreId) {
 
         try {
+            if (offreId == null) {
+                // Handle case where offreId is not provided
+                return ResponseEntity.badRequest().body(null);
+            }
+
             Optional<Offre> optionalOffre = offreRepository.findById(offreId);
             if (optionalOffre.isPresent()) {
                 Offre offre = optionalOffre.get();
