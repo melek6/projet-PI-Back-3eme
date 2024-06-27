@@ -32,7 +32,11 @@ public class OffreController {
         Offre offre = offreService.getOffreById(id);
         return new ResponseEntity<>(offre, offre != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
-
+    @GetMapping("getOffreByIduser/{id}")
+    public ResponseEntity<List<Offre>> getOffreByIduser(@PathVariable("id") int id) {
+        List<Offre> offre = offreService.getOffreByIduser(id);
+        return new ResponseEntity<>(offre, offre != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
     @PutMapping("/{id}")
     public ResponseEntity<Offre> updateOffre(@PathVariable("id") int id, @RequestBody Offre offre) {
         Offre updatedOffre = offreService.updateOffre(id, offre);

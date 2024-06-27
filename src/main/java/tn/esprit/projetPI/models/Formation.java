@@ -35,7 +35,7 @@ public class Formation implements Serializable {
 
 
     private String location;
-
+    private String planning;
     @Column(name = "price", nullable = false)
     private double price;
 
@@ -56,7 +56,7 @@ public class Formation implements Serializable {
     public Formation() {
     }
 
-    public Formation(String title, String description, Date schedule,Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user,boolean newFormation,boolean bestSeller) {
+    public Formation(String title, String description, Date schedule,String planning,Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user,boolean newFormation,boolean bestSeller) {
         this.title = title;
         this.description = description;
         this.schedule = schedule;
@@ -69,11 +69,18 @@ public class Formation implements Serializable {
         this.user = user;
         this.bestSeller = bestSeller;
         this.newFormation = newFormation;
+        this.planning = planning;
     }
 
     // Getters and Setters
 
+    public String getPlanning() {
+        return planning;
+    }
 
+    public void setPlanning(String planning) {
+        this.planning = planning;
+    }
     public int getId() {
         return id;
     }
@@ -103,7 +110,7 @@ public class Formation implements Serializable {
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+        this.startDate = startDate; 
     }
 
     public Date getEndDate() {

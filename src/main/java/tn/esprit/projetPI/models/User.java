@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -32,7 +33,7 @@ public class User {
 	@Size(max = 50)
 	@Email
 	private String email;
-
+	private boolean blocked;
 	@NotBlank
 	@Size(max = 120)
 	private String password;
@@ -48,8 +49,14 @@ public class User {
 	@JoinTable(	name = "user_roles", 
 				joinColumns = @JoinColumn(name = "user_id"), 
 				inverseJoinColumns = @JoinColumn(name = "role_id"))
+
 	private Set<Role> roles = new HashSet<>();
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<Quiz> quizzes;
+
+	@OneToOne(mappedBy = "user")
+	private Tentative tentative;
 	public User() {
 	}
 
@@ -99,5 +106,11 @@ public class User {
 		this.roles = roles;
 	}
 
+	public boolean isBlocked() {
+		return blocked;
+	}
 
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
 }
