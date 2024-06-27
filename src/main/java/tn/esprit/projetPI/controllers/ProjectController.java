@@ -63,4 +63,12 @@ public class ProjectController {
                                         @RequestParam(required = false) String skillsRequired) {
         return projectService.searchProjects(category, skillsRequired);
     }
+
+    @GetMapping("/user/GetById")
+    public List<Project> getProjectsByUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return projectService.retrieveProjectsByUser(user);
+    }
 }
