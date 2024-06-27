@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.ProjectCategory;
+import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.ProjectRepository;
 
 import java.util.List;
@@ -64,5 +65,9 @@ public class ProjectService implements IProjectService {
     @Override
     public List<Project> searchProjects(ProjectCategory category, String skillsRequired) {
         return projectRepository.searchProjects(category, skillsRequired);
+    }
+
+    public List<Project> retrieveProjectsByUser(User user) {
+        return projectRepository.findByUser(user);
     }
 }

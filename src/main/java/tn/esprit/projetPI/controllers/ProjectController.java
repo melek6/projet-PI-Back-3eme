@@ -28,18 +28,18 @@ public class ProjectController {
     @Autowired
     private JwtUtils jwtUtils;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Project> getAllProjects() {
         return projectService.retrieveAllProjects();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/view/{id}")
     public Project getProjectById(@PathVariable Long id) {
         Optional<Project> project = projectService.retrieveProject(id);
         return project.orElse(null);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public Project createProject(@RequestBody Project project) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -48,12 +48,12 @@ public class ProjectController {
         return projectService.addProject(project);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public Project updateProject(@PathVariable Long id, @RequestBody Project projectDetails) {
         return projectService.updateProject(id, projectDetails);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
     }
@@ -62,5 +62,13 @@ public class ProjectController {
     public List<Project> searchProjects(@RequestParam(required = false) ProjectCategory category,
                                         @RequestParam(required = false) String skillsRequired) {
         return projectService.searchProjects(category, skillsRequired);
+    }
+
+    @GetMapping("/user/GetById")
+    public List<Project> getProjectsByUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return projectService.retrieveProjectsByUser(user);
     }
 }
