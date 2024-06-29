@@ -21,7 +21,8 @@ public class UserService implements UserServiceint{
 
     @Autowired
     private RoleRepository roleRepository;
-
+    @Autowired
+    private EmailService emailService;
     @Autowired
     private PasswordEncoder encoder;
     @Override
@@ -65,10 +66,15 @@ public class UserService implements UserServiceint{
     public User blockUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         if (user.isBlocked())
-        {user.setBlocked(false);}
+        {user.setBlocked(false);
+            emailService.sendSimpleEmail(user.getEmail(),
+                    "votre compte a ete debloqué","" );}
         else
         {
             user.setBlocked(true);
+            emailService.sendSimpleEmail(user.getEmail(),
+                    "votre compte a ete bloqué","" );
+
         }
         return userRepository.save(user);
     }

@@ -34,6 +34,16 @@ public class User {
 	@Email
 	private String email;
 	private boolean blocked;
+	private String profilePictureUrl;
+
+	public String getProfilePictureUrl() {
+		return profilePictureUrl;
+	}
+
+	public void setProfilePictureUrl(String profilePictureUrl) {
+		this.profilePictureUrl = profilePictureUrl;
+	}
+
 	@NotBlank
 	@Size(max = 120)
 	private String password;
