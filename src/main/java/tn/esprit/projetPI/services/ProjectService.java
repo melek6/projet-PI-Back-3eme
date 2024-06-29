@@ -2,6 +2,8 @@ package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.dto.DtoMapper;
+import tn.esprit.projetPI.dto.ProjectDTO;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.ProjectCategory;
 import tn.esprit.projetPI.models.User;
@@ -9,6 +11,7 @@ import tn.esprit.projetPI.repository.ProjectRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService implements IProjectService {
@@ -17,8 +20,11 @@ public class ProjectService implements IProjectService {
     private ProjectRepository projectRepository;
 
     @Override
-    public List<Project> retrieveAllProjects() {
-        return projectRepository.findAll();
+    public List<ProjectDTO> retrieveAllProjects() {
+        List<Project> projects = projectRepository.findAll();
+        return projects.stream()
+                .map(DtoMapper::toProjectDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -28,26 +34,15 @@ public class ProjectService implements IProjectService {
 
     @Override
     public Project updateProject(Long id, Project projectDetails) {
-        Project existingProject = projectRepository.findById(id).orElseThrow(() -> new RuntimeException("Project not found"));
+        Project existingProject = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        if (projectDetails.getTitle() != null) {
-            existingProject.setTitle(projectDetails.getTitle());
-        }
-        if (projectDetails.getDescription() != null) {
-            existingProject.setDescription(projectDetails.getDescription());
-        }
-        if (projectDetails.getCategory() != null) {
-            existingProject.setCategory(projectDetails.getCategory());
-        }
-        if (projectDetails.getSkillsRequired() != null) {
-            existingProject.setSkillsRequired(projectDetails.getSkillsRequired());
-        }
-        if (projectDetails.getDeadline() != null) {
-            existingProject.setDeadline(projectDetails.getDeadline());
-        }
-        if (projectDetails.getBudget() != 0) {
-            existingProject.setBudget(projectDetails.getBudget());
-        }
+        existingProject.setTitle(projectDetails.getTitle());
+        existingProject.setDescription(projectDetails.getDescription());
+        existingProject.setCategory(projectDetails.getCategory());
+        existingProject.setSkillsRequired(projectDetails.getSkillsRequired());
+        existingProject.setDeadline(projectDetails.getDeadline());
+        existingProject.setBudget(projectDetails.getBudget());
 
         return projectRepository.save(existingProject);
     }
@@ -64,7 +59,8 @@ public class ProjectService implements IProjectService {
 
     @Override
     public List<Project> searchProjects(ProjectCategory category, String skillsRequired) {
-        return projectRepository.searchProjects(category, skillsRequired);
+        // Implement search logic here if needed
+        return null;
     }
 
     @Override

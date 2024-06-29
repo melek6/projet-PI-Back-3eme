@@ -1,9 +1,9 @@
 package tn.esprit.projetPI.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.User;
@@ -28,21 +28,20 @@ public class PropositionController {
     private UserRepository userRepository;
 
     @GetMapping
-    public List<Proposition> getAllPropositions() {
+    public List<PropositionDTO> getAllPropositions() {
         return propositionService.retrieveAllPropositions();
     }
 
     @GetMapping("/{projectId}")
-    public List<Proposition> getPropositionsByProjectId(@PathVariable Long projectId) {
+    public List<PropositionDTO> getPropositionsByProjectId(@PathVariable Long projectId) {
         return propositionService.getPropositionsByProjectId(projectId);
     }
 
     @PostMapping(value = "/{projectId}", consumes = "application/json", produces = "application/json")
     public Proposition createProposition(@PathVariable Long projectId, @RequestBody Proposition proposition) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         proposition.setProject(project);
         proposition.setUser(user);
@@ -62,9 +61,7 @@ public class PropositionController {
 
     @PostMapping("/{id}/approve")
     public Proposition approveProposition(@PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return propositionService.approveProposition(id, username);
+        return propositionService.approveProposition(id, SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     @PostMapping("/{id}/decline")

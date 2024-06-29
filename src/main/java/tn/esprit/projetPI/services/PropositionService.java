@@ -2,12 +2,13 @@ package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.dto.DtoMapper;
+import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Proposition;
-import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.PropositionRepository;
-import tn.esprit.projetPI.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PropositionService implements IPropositionService {
@@ -15,12 +16,20 @@ public class PropositionService implements IPropositionService {
     @Autowired
     private PropositionRepository propositionRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    @Override
+    public List<PropositionDTO> retrieveAllPropositions() {
+        List<Proposition> propositions = propositionRepository.findAll();
+        return propositions.stream()
+                .map(DtoMapper::toPropositionDTO)
+                .collect(Collectors.toList());
+    }
 
     @Override
-    public List<Proposition> retrieveAllPropositions() {
-        return propositionRepository.findAll();
+    public List<PropositionDTO> getPropositionsByProjectId(Long projectId) {
+        List<Proposition> propositions = propositionRepository.findByProjectId(projectId);
+        return propositions.stream()
+                .map(DtoMapper::toPropositionDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -30,20 +39,13 @@ public class PropositionService implements IPropositionService {
 
     @Override
     public Proposition updateProposition(Long id, Proposition propositionDetails) {
-        Proposition existingProposition = propositionRepository.findById(id).orElseThrow(() -> new RuntimeException("Proposition not found"));
+        Proposition existingProposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proposition not found"));
 
-        if (propositionDetails.getDetail() != null) {
-            existingProposition.setDetail(propositionDetails.getDetail());
-        }
-        if (propositionDetails.getAmount() != 0) {
-            existingProposition.setAmount(propositionDetails.getAmount());
-        }
-        if (propositionDetails.getDate() != null) {
-            existingProposition.setDate(propositionDetails.getDate());
-        }
-        if (propositionDetails.getStatus() != null) {
-            existingProposition.setStatus(propositionDetails.getStatus());
-        }
+        existingProposition.setDetail(propositionDetails.getDetail());
+        existingProposition.setAmount(propositionDetails.getAmount());
+        existingProposition.setDate(propositionDetails.getDate());
+        existingProposition.setStatus(propositionDetails.getStatus());
 
         return propositionRepository.save(existingProposition);
     }
@@ -54,20 +56,17 @@ public class PropositionService implements IPropositionService {
     }
 
     @Override
-    public List<Proposition> getPropositionsByProjectId(Long projectId) {
-        return propositionRepository.findByProjectId(projectId);
-    }
-
-    @Override
     public Proposition approveProposition(Long id, String username) {
-        Proposition proposition = propositionRepository.findById(id).orElseThrow(() -> new RuntimeException("Proposition not found"));
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proposition not found"));
         proposition.setStatus("APPROVED");
         return propositionRepository.save(proposition);
     }
 
     @Override
     public Proposition declineProposition(Long id) {
-        Proposition proposition = propositionRepository.findById(id).orElseThrow(() -> new RuntimeException("Proposition not found"));
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proposition not found"));
         proposition.setStatus("DECLINED");
         return propositionRepository.save(proposition);
     }
