@@ -4,11 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.projetPI.dto.ProjectDTO;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.ProjectCategory;
 import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.UserRepository;
-import tn.esprit.projetPI.security.jwt.JwtUtils;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.projetPI.dto.ProjectDTO;
+import tn.esprit.projetPI.models.Project;
+import tn.esprit.projetPI.models.ProjectCategory;
+import tn.esprit.projetPI.models.User;
+import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.services.IProjectService;
 
 import java.util.Arrays;
@@ -27,11 +39,8 @@ public class ProjectController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private JwtUtils jwtUtils;
-
     @GetMapping("/all")
-    public List<Project> getAllProjects() {
+    public List<ProjectDTO> getAllProjects() {
         return projectService.retrieveAllProjects();
     }
 
@@ -69,7 +78,6 @@ public class ProjectController {
                 .map(Enum::name)
                 .collect(Collectors.toList());
     }
-
 
     @DeleteMapping("/delete/{id}")
     public void deleteProject(@PathVariable Long id) {

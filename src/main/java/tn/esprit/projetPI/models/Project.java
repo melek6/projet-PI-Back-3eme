@@ -1,6 +1,5 @@
 package tn.esprit.projetPI.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -31,14 +30,15 @@ public class Project implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference(value = "user-project")
+    @JsonIgnoreProperties("projects") // To avoid circular reference with User
     private User user;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "project-proposition")
+    @JsonManagedReference
     private Set<Proposition> propositions = new HashSet<>();
 
     public Project() {
+        // No-argument constructor
     }
 
     public Project(String title, String description, ProjectCategory category, String skillsRequired, String deadline, double budget, User user) {
