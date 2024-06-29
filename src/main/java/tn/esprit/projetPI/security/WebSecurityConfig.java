@@ -15,7 +15,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import tn.esprit.projetPI.security.jwt.AuthEntryPointJwt;
@@ -23,6 +25,7 @@ import tn.esprit.projetPI.security.jwt.AuthTokenFilter;
 import tn.esprit.projetPI.services.UserDetailsServiceImpl;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -53,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://localhost:4200");
+		config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
 		source.registerCorsConfiguration("/**", config);
@@ -82,15 +85,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests()
-				.antMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll() // Autoriser l'accès sans authentification
+				.antMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
 				.antMatchers("/api/auth/**").permitAll()
 				.antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-				.antMatchers("/password-reset/**").permitAll() // Autoriser l'accès sans authentification
-				.antMatchers("/api/admin/**").hasRole("ADMIN") // S'assurer que les endpoints admin sont accessibles uniquement aux admins
+				.antMatchers("/password-reset/**").permitAll()
+				.antMatchers("/api/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
 				.oauth2Login()
-				.loginPage("/login") // Page de login personnalisée
+				.loginPage("/login")
 				.defaultSuccessUrl("/home", true)
 				.and()
 				.logout()

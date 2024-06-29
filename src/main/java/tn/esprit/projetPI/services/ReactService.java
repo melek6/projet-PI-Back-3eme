@@ -1,9 +1,14 @@
 package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.models.BlogPost;
 import tn.esprit.projetPI.models.React;
+import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.ReactRepository;
+import tn.esprit.projetPI.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +18,9 @@ public class ReactService implements IReactService {
 
     @Autowired
     private ReactRepository reactRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<React> getAllReacts() {
@@ -26,6 +34,18 @@ public class ReactService implements IReactService {
 
     @Override
     public React createReact(React react) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Long userId;
+        if (principal instanceof UserDetailsImpl) {
+            userId = ((UserDetailsImpl) principal).getId();
+        } else {
+            throw new RuntimeException("L'utilisateur authentifié n'est pas trouvé ou n'est pas valide.");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+        react.setUser(user);
+
         return reactRepository.save(react);
     }
 
@@ -47,6 +67,7 @@ public class ReactService implements IReactService {
             reactRepository.deleteById(id);
         }
     }
+
     @Override
     public long countLikes(int blogPostId) {
         return reactRepository.countByBlogPostIdAndType(blogPostId, "like");
@@ -56,5 +77,9 @@ public class ReactService implements IReactService {
     public long countDislikes(int blogPostId) {
         return reactRepository.countByBlogPostIdAndType(blogPostId, "dislike");
     }
-    }
 
+    @Override
+    public Optional<React> findByBlogPostAndUser(BlogPost blogPost, User user) {
+        return reactRepository.findByBlogPostAndUser(blogPost, user);
+    }
+}
