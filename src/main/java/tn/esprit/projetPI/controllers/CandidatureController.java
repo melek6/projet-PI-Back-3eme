@@ -25,7 +25,6 @@ public class CandidatureController {
 
     @Autowired
     private OffreRepository offreRepository;
-<<<<<<< HEAD
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Candidature> createCandidature(
@@ -44,26 +43,6 @@ public class CandidatureController {
             if (optionalOffre.isPresent()) {
                 Offre offre = optionalOffre.get();
                 Candidature candidature = new Candidature(new Date(), nom, mail, cv.getBytes());
-=======
-
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Candidature> createCandidature(
-            @RequestParam("nom") String nom,
-            @RequestParam("prenom") String prenom,
-            @RequestParam("cv") MultipartFile cv,
-            @RequestParam(value = "offre_id", required = false) Integer offreId) {
-
-        try {
-            if (offreId == null) {
-                // Handle case where offreId is not provided
-                return ResponseEntity.badRequest().body(null);
-            }
-
-            Optional<Offre> optionalOffre = offreRepository.findById(offreId);
-            if (optionalOffre.isPresent()) {
-                Offre offre = optionalOffre.get();
-                Candidature candidature = new Candidature(new Date(), nom, prenom, cv.getBytes());
->>>>>>> 8fa0c69 (fix probleme cv)
                 candidature.setOffre(offre);
                 Candidature savedCandidature = candidatureService.saveCandidature(candidature);
                 return ResponseEntity.ok(savedCandidature);

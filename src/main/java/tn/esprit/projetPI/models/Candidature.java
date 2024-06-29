@@ -13,7 +13,7 @@ public class Candidature {
     private Date date;
 
     private String nom;
-    private String prenom;
+    private String mail;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
@@ -27,10 +27,10 @@ public class Candidature {
     public Candidature() {
     }
 
-    public Candidature(Date date, String nom, String prenom, byte[] cv) {
+    public Candidature(Date date, String nom, String mail, byte[] cv) {
         this.date = date;
         this.nom = nom;
-        this.prenom = prenom;
+        this.mail = mail;
         this.cv = cv;
     }
 
@@ -60,12 +60,12 @@ public class Candidature {
         this.nom = nom;
     }
 
-    public String getPrenom() {
-        return prenom;
+    public String getMail() {
+        return mail;
     }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public byte[] getCv() {
@@ -91,7 +91,7 @@ public class Candidature {
                 "id=" + id +
                 ", date=" + date +
                 ", nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
+                ", mail='" + mail + '\'' +
                 '}';
     }
 }
