@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface IBlogPostService {
     List<BlogPost> getAllBlogPosts();
     Optional<BlogPost> getBlogPostById(int id);
-    BlogPost createBlogPost(BlogPost blogPost);
+    BlogPost createBlogPost(BlogPost blogPost) throws Exception;
     BlogPost updateBlogPost(int id, BlogPost blogPostDetails);
     void deleteBlogPost(int id);
 }

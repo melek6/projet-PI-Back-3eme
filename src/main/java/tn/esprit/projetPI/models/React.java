@@ -11,12 +11,19 @@ public class React {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotBlank
+    @Size(min = 0, max = 6)
     private String type;
 
     @ManyToOne
     @JoinColumn(name = "blog_post_id", nullable = false)
     private BlogPost blogPost;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    // Getters et setters
     public int getId() {
         return id;
     }
@@ -39,5 +46,13 @@ public class React {
 
     public void setBlogPost(BlogPost blogPost) {
         this.blogPost = blogPost;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

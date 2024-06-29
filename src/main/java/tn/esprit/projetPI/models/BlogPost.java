@@ -1,6 +1,7 @@
 package tn.esprit.projetPI.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import tn.esprit.projetPI.security.BadWordUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -19,7 +20,10 @@ public class BlogPost {
     private int id;
 
     private String title;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
+
     private Date publishDate;
 
     @ManyToOne
@@ -89,4 +93,14 @@ public class BlogPost {
     public void setReacts(Set<React> reacts) {
         this.reacts = reacts;
     }
+
+    public void validate() throws Exception {
+        if (BadWordUtils.containsBadWord(title) ||
+                BadWordUtils.containsBadWord(content) )
+               {
+            throw new Exception("The offer contains inappropriate language.");
+        }
+    }
+
+
 }

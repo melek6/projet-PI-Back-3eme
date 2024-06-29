@@ -3,6 +3,8 @@ package tn.esprit.projetPI.models;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.Date;
 import java.util.Set;
 
@@ -14,9 +16,9 @@ public class Commentaire {
     private int id;
 
     private String content;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
-
 
     @ManyToOne
     @JoinColumn(name = "blog_post_id", nullable = false)
@@ -28,11 +30,14 @@ public class Commentaire {
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
+    @JsonBackReference
     private Commentaire parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<Commentaire> replies;
 
+    // Getters et setters
     public int getId() {
         return id;
     }
