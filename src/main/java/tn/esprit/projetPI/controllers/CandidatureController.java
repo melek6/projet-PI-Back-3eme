@@ -1,12 +1,20 @@
 package tn.esprit.projetPI.controllers;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.models.Candidature;
+import tn.esprit.projetPI.models.Offre;
+import tn.esprit.projetPI.repository.OffreRepository;
 import tn.esprit.projetPI.services.CandidatureService;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/candidatures")
@@ -15,11 +23,38 @@ public class CandidatureController {
     @Autowired
     private CandidatureService candidatureService;
 
-    @PostMapping
-    public ResponseEntity<Candidature> addCandidature(@RequestBody Candidature candidature) {
-        Candidature newCandidature = candidatureService.saveCandidature(candidature);
-        return new ResponseEntity<>(newCandidature, HttpStatus.CREATED);
+    @Autowired
+    private OffreRepository offreRepository;
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Candidature> createCandidature(
+            @RequestParam("nom") String nom,
+            @RequestParam("mail") String mail,
+            @RequestParam("cv") MultipartFile cv,
+            @RequestParam(value = "offre_id", required = false) Integer offreId) {
+
+        try {
+            if (offreId == null) {
+                // Handle case where offreId is not provided
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            Optional<Offre> optionalOffre = offreRepository.findById(offreId);
+            if (optionalOffre.isPresent()) {
+                Offre offre = optionalOffre.get();
+                Candidature candidature = new Candidature(new Date(), nom, mail, cv.getBytes());
+                candidature.setOffre(offre);
+                Candidature savedCandidature = candidatureService.saveCandidature(candidature);
+                return ResponseEntity.ok(savedCandidature);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 
     @GetMapping
     public ResponseEntity<List<Candidature>> getAllCandidatures() {
