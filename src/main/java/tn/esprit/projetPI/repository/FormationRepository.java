@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface FormationRepository extends JpaRepository<Formation, Integer> {
     List<Formation> findByBestSeller(boolean bestSeller);
-    List<Formation> findByNewFormation(boolean newFormation);
+
     List<Formation> findByCategory(FormationCategory category);
 }

@@ -107,10 +107,7 @@ public class FormationServiceImp implements FormationService {
         return formationRepository.findByBestSeller(true);
     }
 
-    @Override
-    public List<Formation> getNewFormations() {
-        return formationRepository.findByNewFormation(true);
-    }
+
 
     @Override
     public List<Formation> getFormationsByCategory(FormationCategory category) {

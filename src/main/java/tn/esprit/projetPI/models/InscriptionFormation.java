@@ -53,4 +53,14 @@ public class InscriptionFormation implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "formation_id", nullable = false)
+    private Formation formation; // Define Many-to-One relationship with Formation
+    public Formation getFormation() {
+        return formation;
+    }
+
+    public void setFormation(Formation formation) {
+        this.formation = formation;
+    }
 }

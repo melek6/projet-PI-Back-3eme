@@ -14,6 +14,7 @@ public class Formation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "formation_id")
     private int id;
 
 
@@ -22,11 +23,11 @@ public class Formation implements Serializable {
     private boolean bestSeller;
 
 
-    private boolean newFormation;
+
 
     private String description;
 
-    private Date schedule;
+
     @Temporal(TemporalType.DATE)
     private Date startDate;
 
@@ -56,10 +57,10 @@ public class Formation implements Serializable {
     public Formation() {
     }
 
-    public Formation(String title, String description, Date schedule,String planning,Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user,boolean newFormation,boolean bestSeller) {
+    public Formation(String title, String description, String planning,Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user,boolean bestSeller) {
         this.title = title;
         this.description = description;
-        this.schedule = schedule;
+
         this.startDate = startDate;
         this.endDate = endDate;
         this.location = location;
@@ -68,7 +69,7 @@ public class Formation implements Serializable {
         this.category = category;
         this.user = user;
         this.bestSeller = bestSeller;
-        this.newFormation = newFormation;
+
         this.planning = planning;
     }
 
@@ -122,14 +123,8 @@ public class Formation implements Serializable {
     }
 
     // Getter for schedule
-    public Date getSchedule() {
-        return schedule;
-    }
 
     // Setter for schedule
-    public void setSchedule(Date schedule) {
-        this.schedule = schedule;
-    }
     public String getLocation() {
         return location;
     }
@@ -185,12 +180,13 @@ public class Formation implements Serializable {
     public void setBestSeller(boolean bestSeller) {
         this.bestSeller = bestSeller;
     }
-
-    public boolean isNewFormation() {
-        return newFormation;
+    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL) // Define One-to-Many relationship with InscriptionFormation
+    private List<InscriptionFormation> inscriptions;
+    public List<InscriptionFormation> getInscriptions() {
+        return inscriptions;
     }
 
-    public void setNewFormation(boolean newFormation) {
-        this.newFormation = newFormation;
+    public void setInscriptions(List<InscriptionFormation> inscriptions) {
+        this.inscriptions = inscriptions;
     }
 }

@@ -65,10 +65,7 @@ public class FormationController {
         return formationService.getBestSellerFormations();
     }
 
-    @GetMapping("/new")
-    public List<Formation> getNewFormations() {
-        return formationService.getNewFormations();
-    }
+
 
     @PostMapping("/{formationId}/evaluations")
     public Evaluation addEvaluationToFormation(@PathVariable int formationId, @RequestBody Evaluation evaluation) {

@@ -19,7 +19,7 @@ public interface FormationService {
     List<Evaluation> getEvaluationsForFormation(int formationId);
 
     List<Formation> getBestSellerFormations();
-    List<Formation> getNewFormations();
+
     Formation addFormationByCategory(Formation formation, FormationCategory category);
 
     List<Formation> getFormationsByCategory(FormationCategory category);
