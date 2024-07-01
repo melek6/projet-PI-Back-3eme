@@ -35,6 +35,16 @@ public class User {
 	private String email;
 	private boolean blocked;
 	private String profilePictureUrl;
+	@Column(name = "verification_token")
+	private String verificationToken;
+
+	public String getVerificationToken() {
+		return verificationToken;
+	}
+
+	public void setVerificationToken(String verificationToken) {
+		this.verificationToken = verificationToken;
+	}
 
 	public String getProfilePictureUrl() {
 		return profilePictureUrl;
