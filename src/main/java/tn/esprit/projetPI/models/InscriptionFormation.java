@@ -1,5 +1,7 @@
 package tn.esprit.projetPI.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -20,6 +22,9 @@ public class InscriptionFormation implements Serializable {
     @Column(name = "status", length = 20, nullable = false)
     private String status;
 
+    public InscriptionFormation(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
 
     public InscriptionFormation() {
     }
@@ -53,8 +58,8 @@ public class InscriptionFormation implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "formation_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "formation_id",referencedColumnName = "id")
     private Formation formation; // Define Many-to-One relationship with Formation
     public Formation getFormation() {
         return formation;

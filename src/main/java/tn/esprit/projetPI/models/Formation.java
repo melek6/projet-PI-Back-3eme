@@ -1,6 +1,7 @@
 package tn.esprit.projetPI.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,35 +15,21 @@ public class Formation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "formation_id")
     private int id;
 
-
     private String title;
-
     private boolean bestSeller;
-
-
-
-
     private String description;
-
-
     @Temporal(TemporalType.DATE)
     private Date startDate;
-
     @Temporal(TemporalType.DATE)
     private Date endDate;
-
-
     private String location;
     private String planning;
     @Column(name = "price", nullable = false)
     private double price;
-
     @Column(name = "number_of_hours", nullable = false)
     private int numberOfHours;
-
     @Enumerated(EnumType.STRING)
     private FormationCategory category;
 
@@ -50,17 +37,20 @@ public class Formation implements Serializable {
     private List<Evaluation> evaluations;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+
     private User user;
+    @JsonIgnore
+
+    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL)
+    private List<InscriptionFormation> inscriptions;
 
     public Formation() {
     }
 
-    public Formation(String title, String description, String planning,Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user,boolean bestSeller) {
+    public Formation(String title, String description, String planning, Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user, boolean bestSeller) {
         this.title = title;
         this.description = description;
-
         this.startDate = startDate;
         this.endDate = endDate;
         this.location = location;
@@ -69,7 +59,6 @@ public class Formation implements Serializable {
         this.category = category;
         this.user = user;
         this.bestSeller = bestSeller;
-
         this.planning = planning;
     }
 
@@ -82,6 +71,7 @@ public class Formation implements Serializable {
     public void setPlanning(String planning) {
         this.planning = planning;
     }
+
     public int getId() {
         return id;
     }
@@ -111,7 +101,7 @@ public class Formation implements Serializable {
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = startDate; 
+        this.startDate = startDate;
     }
 
     public Date getEndDate() {
@@ -122,9 +112,6 @@ public class Formation implements Serializable {
         this.endDate = endDate;
     }
 
-    // Getter for schedule
-
-    // Setter for schedule
     public String getLocation() {
         return location;
     }
@@ -180,8 +167,7 @@ public class Formation implements Serializable {
     public void setBestSeller(boolean bestSeller) {
         this.bestSeller = bestSeller;
     }
-    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL) // Define One-to-Many relationship with InscriptionFormation
-    private List<InscriptionFormation> inscriptions;
+
     public List<InscriptionFormation> getInscriptions() {
         return inscriptions;
     }

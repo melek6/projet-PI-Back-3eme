@@ -21,18 +21,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/formations")
 public class FormationController {
-
-    private final FormationService formationService;
-    private final EvaluationService evaluationService;
+@Autowired
+    private  FormationService formationService;
+@Autowired
+    private  EvaluationService evaluationService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    @Autowired
-    public FormationController(FormationService formationService, EvaluationService evaluationService) {
-        this.formationService = formationService;
-        this.evaluationService = evaluationService;
-    }
+//    @Autowired
+//    public FormationController(FormationService formationService, EvaluationService evaluationService) {
+//        this.formationService = formationService;
+//        this.evaluationService = evaluationService;
+//    }
 
     @GetMapping
     public List<Formation> getAllFormations() {

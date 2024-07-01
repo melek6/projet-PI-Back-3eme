@@ -22,9 +22,10 @@ import java.util.Optional;
 
 @Service
 public class FormationServiceImp implements FormationService {
-
-    private final FormationRepository formationRepository;
-    private final EvaluationRepository evaluationRepository;
+@Autowired
+    private  FormationRepository formationRepository;
+@Autowired
+    private  EvaluationRepository evaluationRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -32,11 +33,11 @@ public class FormationServiceImp implements FormationService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    public FormationServiceImp(FormationRepository formationRepository, EvaluationRepository evaluationRepository) {
-        this.formationRepository = formationRepository;
-        this.evaluationRepository = evaluationRepository;
-    }
+//    @Autowired
+//    public FormationServiceImp(FormationRepository formationRepository, EvaluationRepository evaluationRepository) {
+//        this.formationRepository = formationRepository;
+//        this.evaluationRepository = evaluationRepository;
+//    }
 
     @Override
     public List<Formation> retrieveAllFormations() {
