@@ -37,7 +37,7 @@ public class PropositionController {
         return propositionService.getPropositionsByProjectId(projectId);
     }
 
-    @PostMapping("/{projectId}")
+    @PostMapping(value = "/{projectId}", consumes = "application/json", produces = "application/json")
     public Proposition createProposition(@PathVariable Long projectId, @RequestBody Proposition proposition) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,7 +50,7 @@ public class PropositionController {
         return propositionService.addProposition(proposition);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     public Proposition updateProposition(@PathVariable Long id, @RequestBody Proposition propositionDetails) {
         return propositionService.updateProposition(id, propositionDetails);
     }

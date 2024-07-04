@@ -1,6 +1,7 @@
 package tn.esprit.projetPI.services;
 
 import tn.esprit.projetPI.models.Proposition;
+import tn.esprit.projetPI.models.User;
 
 import java.util.List;
 
