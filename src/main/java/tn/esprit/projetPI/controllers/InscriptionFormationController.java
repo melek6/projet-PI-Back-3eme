@@ -29,39 +29,33 @@ public class InscriptionFormationController {
     }
 
 
-
-
-
-
     @PostMapping("/hello")
     public ResponseEntity<InscriptionFormation> createinscfor(@RequestBody Map<String, Object> payload) {
         try {
             String status = (String) payload.get("status");
-            Integer formationid = (Integer) payload.get("formationId");
+            Integer formationId = (Integer) payload.get("formationId");
 
-            if (formationid == null) {
-                // Handle case where formation_id is not provided
+            if (formationId == null) {
                 System.out.println("Formation ID is null.");
                 return ResponseEntity.badRequest().body(null);
             }
 
-            System.out.println("Formation ID received: " + formationid);
+            System.out.println("Formation ID received: " + formationId);
 
-            Optional<Formation> optionalFormation = formationRepository.findById(formationid);
+            Optional<Formation> optionalFormation = formationRepository.findById(formationId);
             if (optionalFormation.isPresent()) {
                 Formation formation = optionalFormation.get();
                 InscriptionFormation inscriptionFormation = new InscriptionFormation(new Date(), status);
                 inscriptionFormation.setFormation(formation);
-                InscriptionFormation saveinsfor = inscriptionFormationService.addInscription(inscriptionFormation);
+                InscriptionFormation saveInscription = inscriptionFormationService.addInscription(inscriptionFormation);
                 System.out.println("InscriptionFormation added successfully.");
-                return new ResponseEntity<>(saveinsfor, HttpStatus.CREATED);
+                return new ResponseEntity<>(saveInscription, HttpStatus.CREATED);
             } else {
-                System.out.println("Formation not found with ID: " + formationid);
+                System.out.println("Formation not found with ID: " + formationId);
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
             System.out.println("Exception occurred: " + e.getMessage());
-            // Handle exception (e.g., logging, return appropriate error response)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

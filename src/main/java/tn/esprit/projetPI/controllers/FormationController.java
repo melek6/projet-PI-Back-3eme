@@ -44,7 +44,9 @@ public class FormationController {
     public Formation getFormationById(@PathVariable int id) {
         return formationService.retrieveFormation(id).orElse(null);
     }
-
+    @GetMapping("/recommended")
+    public List<Formation> getRecommendedFormations() {
+        return formationService.getRecommendedFormations();  }
     @PostMapping
     public Formation createFormation(@RequestBody Formation formation) {
         return formationService.addFormation(formation);

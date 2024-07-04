@@ -24,4 +24,6 @@ public interface FormationService {
 
     List<Formation> getFormationsByCategory(FormationCategory category);
     String uploadPlanningFile(int formationId, MultipartFile file);
+
+    List<Formation> getRecommendedFormations();
 }
