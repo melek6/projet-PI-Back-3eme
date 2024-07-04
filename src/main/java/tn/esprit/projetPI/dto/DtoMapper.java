@@ -34,6 +34,8 @@ public class DtoMapper {
         dto.setSkillsRequired(project.getSkillsRequired());
         dto.setDeadline(project.getDeadline());
         dto.setBudget(project.getBudget());
+        dto.setNbPropositions(project.getPropositions().size()); // Set the number of propositions
+        dto.setUser(project.getUser()); // Ensure user is set
 
         return dto;
     }

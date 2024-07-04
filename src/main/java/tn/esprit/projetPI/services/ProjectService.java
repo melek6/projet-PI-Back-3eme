@@ -1,6 +1,7 @@
 package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.dto.DtoMapper;
 import tn.esprit.projetPI.dto.ProjectDTO;
@@ -9,6 +10,7 @@ import tn.esprit.projetPI.models.ProjectCategory;
 import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.ProjectRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,6 +20,8 @@ public class ProjectService implements IProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    private EmailService emailService;
 
     @Override
     public List<ProjectDTO> retrieveAllProjects() {
@@ -58,13 +62,48 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public List<Project> searchProjects(ProjectCategory category, String skillsRequired) {
-        // Implement search logic here if needed
-        return null;
+    public List<Project> searchProjects(ProjectCategory category, Double minBudget, Double maxBudget) {
+        if (category != null) {
+            if (minBudget != null && maxBudget != null) {
+                return projectRepository.findByCategoryAndBudgetBetween(category, minBudget, maxBudget);
+            } else if (minBudget != null) {
+                return projectRepository.findByCategoryAndBudgetGreaterThanEqual(category, minBudget);
+            } else if (maxBudget != null) {
+                return projectRepository.findByCategoryAndBudgetLessThanEqual(category, maxBudget);
+            } else {
+                return projectRepository.findByCategory(category);
+            }
+        } else {
+            if (minBudget != null && maxBudget != null) {
+                return projectRepository.findByBudgetBetween(minBudget, maxBudget);
+            } else if (minBudget != null) {
+                return projectRepository.findByBudgetGreaterThanEqual(minBudget);
+            } else if (maxBudget != null) {
+                return projectRepository.findByBudgetLessThanEqual(maxBudget);
+            } else {
+                return projectRepository.findAll();
+            }
+        }
     }
+
 
     @Override
     public List<Project> retrieveProjectsByUser(User user) {
         return projectRepository.findByUser(user);
+    }
+
+    @Scheduled(cron = "0 0 9 * * ?") // Run daily at 9 AM
+    public void sendDeadlineReminders() {
+        List<ProjectDTO> projects = retrieveAllProjects();
+        LocalDate now = LocalDate.now();
+
+        for (ProjectDTO project : projects) {
+            if (project.getDeadline() != null && project.getDeadline().isAfter(now) && project.getDeadline().isBefore(now.plusWeeks(1))) {
+                String userEmail = project.getUser().getEmail();
+                if (userEmail != null) {
+                    emailService.sendDeadlineReminderEmail(userEmail, project);
+                }
+            }
+        }
     }
 }
