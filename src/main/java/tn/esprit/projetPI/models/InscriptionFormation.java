@@ -22,17 +22,13 @@ public class InscriptionFormation implements Serializable {
     @Column(name = "status", length = 20, nullable = false)
     private String status;
 
-    public InscriptionFormation(Date registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
     public InscriptionFormation() {
+        this.registrationDate = new Date();
     }
 
     public InscriptionFormation(Date registrationDate, String status) {
-        this.registrationDate = registrationDate;
+        this.registrationDate = registrationDate != null ? registrationDate : new Date();  // Set to current date if null
         this.status = status;
-
     }
 
     public int getId() {
@@ -59,13 +55,24 @@ public class InscriptionFormation implements Serializable {
         this.status = status;
     }
     @ManyToOne
-    @JoinColumn(name = "formation_id",referencedColumnName = "id")
-    private Formation formation; // Define Many-to-One relationship with Formation
+    @JoinColumn(name = "formation_id",nullable = false)
+    private Formation formation;
     public Formation getFormation() {
         return formation;
     }
 
     public void setFormation(Formation formation) {
         this.formation = formation;
+    }
+    @ManyToOne
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

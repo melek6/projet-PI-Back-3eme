@@ -143,4 +143,8 @@ public class FormationServiceImp implements FormationService {
             throw new RuntimeException("Erreur lors du téléchargement du fichier", e);
         }
     }
+    @Override
+    public List<Formation> getRecommendedFormations() {
+        return formationRepository.findTopFormationsByAverageScore().subList(0, 5);  // Récupère les 5 meilleures formations
+    }
 }
