@@ -14,6 +14,6 @@ public interface IProjectService {
     Project updateProject(Long id, Project projectDetails);
     Optional<Project> retrieveProject(Long id);
     void deleteProject(Long id);
-    List<Project> searchProjects(ProjectCategory category, String skillsRequired);
     List<Project> retrieveProjectsByUser(User user);
+    List<Project> searchProjects(ProjectCategory category, Double minBudget, Double maxBudget);
 }

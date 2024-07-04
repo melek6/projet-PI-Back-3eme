@@ -1,14 +1,18 @@
 package tn.esprit.projetPI.dto;
 
-public class ProjectDTO {
+import tn.esprit.projetPI.models.User;
+import java.time.LocalDate;
 
+public class ProjectDTO {
     private Long id;
     private String title;
     private String description;
     private String category;
     private String skillsRequired;
-    private String deadline;
+    private LocalDate deadline;
     private double budget;
+    private int nbPropositions;
+    private User user;
 
     // Getters and setters
     public Long getId() {
@@ -51,11 +55,11 @@ public class ProjectDTO {
         this.skillsRequired = skillsRequired;
     }
 
-    public String getDeadline() {
+    public LocalDate getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(String deadline) {
+    public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
     }
 
@@ -65,5 +69,25 @@ public class ProjectDTO {
 
     public void setBudget(double budget) {
         this.budget = budget;
+    }
+
+    public int getNbPropositions() {
+        return nbPropositions;
+    }
+
+    public void setNbPropositions(int nbPropositions) {
+        this.nbPropositions = nbPropositions;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getUserEmail() {
+        return user != null ? user.getEmail() : null;
     }
 }
