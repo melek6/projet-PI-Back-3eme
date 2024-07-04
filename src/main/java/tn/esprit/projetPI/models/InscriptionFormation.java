@@ -19,7 +19,7 @@ public class InscriptionFormation implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date registrationDate;
 
-    @Column(name = "status", length = 20, nullable = false)
+    @Column(name = "status", length = 255, nullable = false)
     private String status;
 
     public InscriptionFormation() {
