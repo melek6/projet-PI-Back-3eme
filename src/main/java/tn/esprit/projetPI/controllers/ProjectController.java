@@ -11,8 +11,10 @@ import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.security.jwt.JwtUtils;
 import tn.esprit.projetPI.services.IProjectService;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -40,11 +42,19 @@ public class ProjectController {
     }
 
     @PostMapping("/create")
-    public Project createProject(@RequestBody Project project) {
+    public Project createProject(
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam ProjectCategory category,
+            @RequestParam String skillsRequired,
+            @RequestParam String deadline,
+            @RequestParam double budget
+    ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-        project.setUser(user);
+
+        Project project = new Project(title, description, category, skillsRequired, deadline, budget, user);
         return projectService.addProject(project);
     }
 
@@ -52,6 +62,14 @@ public class ProjectController {
     public Project updateProject(@PathVariable Long id, @RequestBody Project projectDetails) {
         return projectService.updateProject(id, projectDetails);
     }
+
+    @GetMapping("/categories")
+    public List<String> getCategories() {
+        return Arrays.stream(ProjectCategory.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+    }
+
 
     @DeleteMapping("/delete/{id}")
     public void deleteProject(@PathVariable Long id) {

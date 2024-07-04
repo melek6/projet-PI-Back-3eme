@@ -67,6 +67,7 @@ public class ProjectService implements IProjectService {
         return projectRepository.searchProjects(category, skillsRequired);
     }
 
+    @Override
     public List<Project> retrieveProjectsByUser(User user) {
         return projectRepository.findByUser(user);
     }
