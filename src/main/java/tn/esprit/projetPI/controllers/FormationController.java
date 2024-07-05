@@ -91,7 +91,10 @@ public class FormationController {
     public List<Formation> getFormationsByCategory(@PathVariable FormationCategory category) {
         return formationService.getFormationsByCategory(category);
     }
-
+    @GetMapping("/completed/{userId}")
+    public List<Formation> getCompletedFormations(@PathVariable Long userId) {
+        return formationService.getCompletedFormations(userId);
+    }
     @PostMapping("/{formationId}/uploadPlanning")
     public ResponseEntity<String> uploadPlanning(@PathVariable int formationId, @RequestParam("file") MultipartFile file) {
         Formation formation = formationService.retrieveFormation(formationId)

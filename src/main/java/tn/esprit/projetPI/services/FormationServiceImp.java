@@ -109,7 +109,9 @@ public class FormationServiceImp implements FormationService {
     }
 
 
-
+    public List<Formation> getCompletedFormations(Long userId) {
+        return formationRepository.findCompletedFormationsByUserId(userId);
+    }
     @Override
     public List<Formation> getFormationsByCategory(FormationCategory category) {
         return formationRepository.findByCategory(category);

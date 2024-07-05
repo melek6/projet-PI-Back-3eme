@@ -17,4 +17,6 @@ public interface FormationRepository extends JpaRepository<Formation, Integer> {
     List<Formation> findByCategory(FormationCategory category);
     @Query("SELECT f FROM Formation f LEFT JOIN f.evaluations e GROUP BY f.id ORDER BY AVG(e.score) DESC")
     List<Formation> findTopFormationsByAverageScore();
+
+    List<Formation> findCompletedFormationsByUserId(Long userId);
 }
