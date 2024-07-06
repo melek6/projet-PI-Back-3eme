@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.dto.DtoMapper;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Proposition;
+import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.PropositionRepository;
+import tn.esprit.projetPI.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +20,12 @@ public class PropositionService implements IPropositionService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<PropositionDTO> retrieveAllPropositions() {
@@ -37,7 +45,12 @@ public class PropositionService implements IPropositionService {
 
     @Override
     public Proposition addProposition(Proposition proposition) {
-        return propositionRepository.save(proposition);
+        Proposition savedProposition = propositionRepository.save(proposition);
+
+        // Send notification
+        notificationService.sendNewPropositionNotification(proposition.getProject().getUser(), proposition.getProject().getTitle());
+
+        return savedProposition;
     }
 
     @Override
