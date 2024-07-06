@@ -48,10 +48,6 @@ public class User {
 	@Size(max = 120)
 	private String password;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	@JsonManagedReference
-	private Set<Project> projects;
-
 
 //	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 ////	@JsonManagedReference

@@ -1,5 +1,8 @@
 package tn.esprit.projetPI.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -15,8 +18,9 @@ public class React {
     @Size(min = 0, max = 6)
     private String type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blog_post_id", nullable = false)
+    @JsonManagedReference(value = "blogpost-react")
     private BlogPost blogPost;
 
     @ManyToOne
