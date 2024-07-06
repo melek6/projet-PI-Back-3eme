@@ -14,4 +14,5 @@ public interface UserServiceint {
 User getUserById(long id);
     List<User> getAllUsers();
     public User blockUser(Long id);
+    public List<User> findNearestModerators(Double latitude, Double longitude);
 }

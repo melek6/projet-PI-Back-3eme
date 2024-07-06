@@ -9,9 +9,11 @@ import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.RoleRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserServiceint{
@@ -78,4 +80,35 @@ public class UserService implements UserServiceint{
         }
         return userRepository.save(user);
     }
+
+    @Transactional
+    public List<User> findNearestModerators(Double latitude, Double longitude) {
+        Role moderatorRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+
+        List<User> moderators = userRepository.findByRoles(moderatorRole);
+
+        return moderators.stream()
+                .filter(user -> user.getLatitude() != null && user.getLongitude() != null)
+                .sorted((u1, u2) -> Double.compare(
+                        distance(latitude, longitude, u1.getLatitude(), u1.getLongitude()),
+                        distance(latitude, longitude, u2.getLatitude(), u2.getLongitude())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c; // convert to kilometers
+
+        return distance;
+    }
 }
+

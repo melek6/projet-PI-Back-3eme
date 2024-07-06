@@ -23,10 +23,19 @@ public class UserDetailsImpl implements UserDetails {
 	private boolean blocked;
 	@JsonIgnore
 	private String password;
+	private String profilePictureUrl;
+
+	public String getProfilePictureUrl() {
+		return profilePictureUrl;
+	}
+
+	public void setProfilePictureUrl(String profilePictureUrl) {
+		this.profilePictureUrl = profilePictureUrl;
+	}
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String username, String email, String password,boolean blocked,
+	public UserDetailsImpl(Long id, String username, String email, String password,boolean blocked,String profilePictureUrl,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
@@ -34,6 +43,7 @@ public class UserDetailsImpl implements UserDetails {
 		this.password = password;
 		this.authorities = authorities;
 		this.blocked =blocked;
+		this.profilePictureUrl=profilePictureUrl;
 	}
 
 	public static UserDetailsImpl build(User user) {
@@ -47,6 +57,7 @@ public class UserDetailsImpl implements UserDetails {
 				user.getEmail(),
 				user.getPassword(),
 				user.isBlocked(),
+				user.getProfilePictureUrl(),
 				authorities);
 	}
 

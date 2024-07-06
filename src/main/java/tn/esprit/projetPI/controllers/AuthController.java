@@ -16,7 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Path;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,7 @@ import tn.esprit.projetPI.repository.RoleRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.security.jwt.JwtUtils;
 import tn.esprit.projetPI.services.EmailService;
+import tn.esprit.projetPI.services.FirebaseStorageServiceipm;
 import tn.esprit.projetPI.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +65,10 @@ public class AuthController {
     JwtUtils jwtUtils;
 	@Autowired
 	private EmailService emailService;
-
+@Autowired
+private FirebaseStorageServiceipm firebaseStorageService;
+	@Autowired
+	private ObjectMapper objectMapper; // For JSON parsing
 
 	/*@GetMapping("/user")
 	public OAuth2User user(@AuthenticationPrincipal OAuth2User principal) {
@@ -106,84 +112,49 @@ public class AuthController {
 				userDetails.getId(),
 				userDetails.getUsername(),
 				userDetails.getEmail(),
-userDetails.isBlocked(),
-
-				roles));
+                userDetails.isBlocked(),
+				roles,
+				userDetails.getProfilePictureUrl()
+				));
 	}
-	@PostMapping("/signuUUUUp")
-	public ResponseEntity<?> registerUserRRRR(@Valid @RequestBody SignupRequest signUpRequest) {
+
+	@PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> registerUser(@RequestParam("signUpRequest") String signUpRequestString,
+										  @RequestPart("file") MultipartFile file) {
+		System.out.println("Received signUpRequestString: " + signUpRequestString);
+
+		SignupRequest signUpRequest;
+		try {
+			signUpRequest = objectMapper.readValue(signUpRequestString, SignupRequest.class);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Invalid signUpRequest data"));
+		}
+
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Username is already taken!"));
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
 		}
 
 		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Email is already in use!"));
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+		}
+
+		// Upload profile picture to Firebase
+		String profilePictureUrl = null;
+		try {
+			profilePictureUrl = firebaseStorageService.uploadFile(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 
 		// Create new user's account
 		User user = new User(signUpRequest.getUsername(),
 				signUpRequest.getEmail(),
 				encoder.encode(signUpRequest.getPassword()));
+		user.setProfilePictureUrl(profilePictureUrl);
 
-		Set<String> strRoles = signUpRequest.getRole();
-		Set<Role> roles = new HashSet<>();
-
-		if (strRoles == null) {
-			Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(userRole);
-		} else {
-			strRoles.forEach(role -> {
-				switch (role) {
-					case "admin":
-						Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(adminRole);
-
-						break;
-					case "mod":
-						Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(modRole);
-
-						break;
-					default:
-						Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(userRole);
-				}
-			});
-		}
-
-		user.setRoles(roles);
-		userRepository.save(user);
-
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
-
-
-	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Username is already taken!"));
-		}
-
-		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Email is already in use!"));
-		}
-
-		// Create new user's account
-		User user = new User(signUpRequest.getUsername(),
-				signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()));
+		// Set latitude and longitude
+		user.setLatitude(signUpRequest.getLatitude());
+		user.setLongitude(signUpRequest.getLongitude());
 
 		Set<String> strRoles = signUpRequest.getRole();
 		Set<Role> roles = new HashSet<>();
@@ -200,7 +171,7 @@ userDetails.isBlocked(),
 								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 						roles.add(adminRole);
 						break;
-					case "mod":
+					case "MODERATOR":
 						Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
 								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 						roles.add(modRole);
@@ -229,7 +200,6 @@ userDetails.isBlocked(),
 		return ResponseEntity.ok(new MessageResponse("User registered successfully! Please check your email to verify your account."));
 	}
 
-
 	@GetMapping("/verify")
 	public ResponseEntity<?> verifyUser(@RequestParam("token") String token) {
 		User user = userRepository.findByVerificationToken(token)
@@ -242,138 +212,8 @@ userDetails.isBlocked(),
 		return ResponseEntity.ok(new MessageResponse("User verified successfully!"));
 	}
 
-	@PostMapping("/signuppp")
-	public ResponseEntity<?> registerUserr(@Valid @RequestBody SignupRequest signUpRequest) {
-		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Username is already taken!"));
-		}
 
-		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Email is already in use!"));
-		}
 
-		// Create new user's account
-		User user = new User(signUpRequest.getUsername(),
-							 signUpRequest.getEmail(),
-							 encoder.encode(signUpRequest.getPassword()));
-
-		Set<String> strRoles = signUpRequest.getRole();
-		Set<Role> roles = new HashSet<>();
-
-		if (strRoles == null) {
-			Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(userRole);
-		} else {
-			strRoles.forEach(role -> {
-				switch (role) {
-				case "admin":
-					Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					roles.add(adminRole);
-
-					break;
-				case "mod":
-					Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					roles.add(modRole);
-
-					break;
-				default:
-					Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					roles.add(userRole);
-				}
-			});
-		}
-
-		user.setRoles(roles);
-		userRepository.save(user);
-
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
-
-	/*@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestPart("signupRequest") SignupRequest signUpRequest,
-										  @RequestPart("image") MultipartFile image) {
-		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Username is already taken!"));
-		}
-
-		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Email is already in use!"));
-		}
-
-		// Create new user's account
-		User user = new User(signUpRequest.getUsername(),
-				signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()));
-
-		Set<String> strRoles = signUpRequest.getRole();
-		Set<Role> roles = new HashSet<>();
-
-		if (strRoles == null) {
-			Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(userRole);
-		} else {
-			strRoles.forEach(role -> {
-				switch (role) {
-					case "admin":
-						Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(adminRole);
-
-						break;
-					case "mod":
-						Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(modRole);
-
-						break;
-					default:
-						Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-						roles.add(userRole);
-				}
-			});
-		}
-
-		user.setRoles(roles);
-
-		// Save the image to a local folder or cloud storage and get the URL
-		String imageUrl = saveImage(image);
-		user.setProfilePictureUrl(imageUrl);
-
-		userRepository.save(user);
-
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
-	private String saveImage(MultipartFile image) {
-		if (image.isEmpty()) {
-			throw new RuntimeException("Failed to store empty file.");
-		}
-
-		try {
-			String uploadDir = "user-photos/";
-			String originalFilename = image.getOriginalFilename();
-			String newFilename = UUID.randomUUID().toString() + "_" + originalFilename;
-			Path path = Paths.get(uploadDir + newFilename);
-			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-			return path.toString();
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to store file.", e);
-		}
-	}
-*/
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.getSession().invalidate();  // Invalidate the session
