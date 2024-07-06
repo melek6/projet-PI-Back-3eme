@@ -1,10 +1,12 @@
 package tn.esprit.projetPI.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,28 +20,39 @@ public class Project implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is mandatory")
     private String title;
+
+    @NotBlank(message = "Description is mandatory")
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "Category is mandatory")
     private ProjectCategory category;
 
+    @NotBlank(message = "Skills required is mandatory")
     private String skillsRequired;
-    private String deadline;
+
+    @NotNull(message = "Deadline is mandatory")
+    private LocalDate deadline;
+
+    @DecimalMin(value = "0.0", inclusive = false, message = "Budget must be greater than zero")
     private double budget;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties("projects")
     private User user;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<Proposition> propositions = new HashSet<>();
 
     public Project() {
+        // No-argument constructor
     }
 
-    public Project(String title, String description, ProjectCategory category, String skillsRequired, String deadline, double budget, User user) {
+    public Project(String title, String description, ProjectCategory category, String skillsRequired, LocalDate deadline, double budget, User user) {
         this.title = title;
         this.description = description;
         this.category = category;
@@ -90,11 +103,11 @@ public class Project implements Serializable {
         this.skillsRequired = skillsRequired;
     }
 
-    public String getDeadline() {
+    public LocalDate getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(String deadline) {
+    public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
     }
 

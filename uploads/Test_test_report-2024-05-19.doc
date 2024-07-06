@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>testreport Gestion de Promotion</title>
+<link type="text/css" rel="stylesheet" href="http://localhost/testlink-1.9.0/gui/themes/default/css/tl_documents.css" />
+<style type="text/css" media="print">.notprintable { display:none;}</style>
+</head>
+<body>
+<div>
+<div style="float:right;">TestLink Community [configure $tlCfg-&gt;document_generator-&gt;company_name]</div>
+<div>Tunivita</div><hr />
+<p style="text-align: center;"><img alt="TestLink logo" title="configure using $tlCfg->document_generator->company_logo" height="53"  src="http://localhost/testlink-1.9.0/gui/themes/default/images/company_logo.png" /></div>
+<div class="doc_title"><p>Gestion de Promotion</p><p>Test Report</p></div>
+<div class="summary"><p id="prodname">Project: Tunivita</p>
+<p id="author">Author: admin</p>
+<p id="printedby">Printed by TestLink on 19/05/2024</p></div>
+<div class="pagefooter" id="copyright">2009 &copy; TestLink Community</div>
+<h1 class="doclevel">Table Of Contents</h1><div class="toc"><br><b><p style="padding-left: 20px;"><a href="#toc_1_1">1.1. Test de Gestion de promotion</a></p></b>
+<b><p style="padding-left: 30px;"><a href="#toc_1_1_1">1.1.1. Modification d’une promotion</a></p></b>
+<p style="padding-left: 60px;"><a href="#toc_tc333">Valider les modifications des promotions</a></p><p style="padding-left: 60px;"><a href="#toc_tc339">L'utilisateur doit être connecté pour modifier une promotion</a></p><b><p style="padding-left: 30px;"><a href="#toc_1_1_2">1.1.2. Ajout d’une promotion</a></p></b>
+<p style="padding-left: 60px;"><a href="#toc_tc347">Ajout d’une promotion</a></p><b><p style="padding-left: 30px;"><a href="#toc_1_1_3">1.1.3. Suppression d’une promotion</a></p></b>
+<p style="padding-left: 60px;"><a href="#toc_tc356">Suppression d’une promotion</a></p></div><p></p><a name='toc_1_1'></a>
+<h1 class='doclevel'>1.1. Test Suite : Test de Gestion de promotion</h1>
+<div><p>&nbsp; Cette suite de tests contient des tests li&eacute;s &agrave; la fonctionnalit&eacute; de gestion des promotions, en se concentrant sp&eacute;cifiquement sur l'ajout modification, affichage et la suppression.</p></div><a name='toc_1_1_1'></a>
+<h2 class='doclevel'>1.1.1. Test Suite : Modification d’une promotion</h2>
+<div><p>Cette suite de tests couvre les sc&eacute;narios li&eacute;s &agrave; la modification des promotions dans l'application. Les tests v&eacute;rifieront la capacit&eacute; de l'utilisateur &agrave; &eacute;diter les d&eacute;tails d'une promotion existante, y compris les changements de titre, de description, de dates de validit&eacute;, et de crit&egrave;res d'&eacute;ligibilit&eacute;.</p>
+<p>Objectifs des tests:</p>
+<ul>
+    <li>Valider que les modifications apport&eacute;es aux promotions sont correctement sauvegard&eacute;es et affich&eacute;es.</li>
+    <li>S'assurer que les r&egrave;gles de validation sont correctement appliqu&eacute;es lors de l'&eacute;dition des promotions.</li>
+</ul> 
+</div><a name="toc_tc333"></a><p>&nbsp;</p><div> <table class="tc" width="90%"><tr><th colspan="3">Test Case Test-29: Valider les modifications des promotions</th></tr>
+<tr><td width="20%" valign="top"><span class="label">Author:</span></td><td colspan="2">admin</td></tr>
+<tr><td colspan="3"><span class="label">Summary:</span><br /><p>&nbsp;Ce cas de test v&eacute;rifie que les modifications apport&eacute;es aux promotions sont correctement sauvegard&eacute;es et refl&eacute;t&eacute;es dans l'application. Il couvre les changements de titre, de description, de dates de validit&eacute;.</p>
+<div>&nbsp;</div></td></tr><tr><td colspan="3"><span class="label">Preconditions:</span><br /><p>- L'utilisateur doit &ecirc;tre connect&eacute; avec des privil&egrave;ges administratifs.&nbsp;</p>
+<div>- Au moins une promotion doit &ecirc;tre existante dans le syst&egrave;me.</div></td></tr><tr><td><span class="label">#:</span></td><td><span class="label">Step actions:</span></td><td><span class="label">Expected Results:</span></td></tr><tr><td width="5">1</td><td><p>Acc&eacute;der &agrave; la section &quot;Promotions&quot; dans l'application.</p></td><td><p>&nbsp;La section &quot;Promotions&quot; est affich&eacute;e correctement.</p></td></tr><tr><td width="5">2</td><td><p>&nbsp;S&eacute;lectionner une promotion existante &agrave; modifier.</p></td><td><p>&nbsp;Les d&eacute;tails de la promotion s&eacute;lectionn&eacute;e sont affich&eacute;s pour modification.</p></td></tr><tr><td width="5">3</td><td><p>&nbsp;Changer le titre de la promotion et sauvegarder.</p></td><td><p>&nbsp;Le nouveau titre de la promotion est sauvegard&eacute; avec succ&egrave;s.</p></td></tr><tr><td width="5">4</td><td><p>&nbsp;V&eacute;rifier que le nouveau titre est affich&eacute; correctement dans la liste des promotions.</p></td><td><p>&nbsp;Le nouveau titre est correctement affich&eacute; dans la liste des promotions.</p></td></tr><tr><td colspan="3"></td></tr><tr><td width="20%" valign="top"><span class="label">Last Result:</span></td><td  colspan="2" ><b>Passed</b></td></tr>
+<tr><td width="20%" valign="top">Build</td><td  colspan="2" >SP2</b></td></tr>
+<tr><td width="20%" valign="top">Tester</td><td  colspan="2" >admin</b></td></tr>
+<tr><td width="20%" valign="top">Execution notes</td><td  colspan="2" >OK</td></tr>
+<tr><td width="20%" valign="top"><span class="label">Requirements</span><td colspan="2">Doc756:  Modification d’une promotion<br /></td></tr>
+<tr><td width="20%" valign="top"><span class="label">Keywords:</span><td colspan="2">&nbsp;None<br></td></tr>
+</table>
+</div>
+<a name="toc_tc339"></a><p>&nbsp;</p><div> <table class="tc" width="90%"><tr><th colspan="3">Test Case Test-30: L'utilisateur doit être connecté pour modifier une promotion</th></tr>
+<tr><td width="20%" valign="top"><span class="label">Author:</span></td><td colspan="2">admin</td></tr>
+<tr><td colspan="3"><span class="label">Summary:</span><br /><p>Ce cas de test v&eacute;rifie que seuls les utilisateurs connect&eacute;s peuvent modifier une promotion existante dans l'application.</p>
+<div>&nbsp;</div></td></tr><tr><td colspan="3"><span class="label">Preconditions:</span><br /><p>&nbsp;L'utilisateur a un compte actif sur l'application.</p>
+<div>L'utilisateur est d&eacute;connect&eacute; ou sa session a expir&eacute;.</div>
+<div>Il existe au moins une promotion disponible &agrave; modifier dans le syst&egrave;me.</div></td></tr><tr><td><span class="label">#:</span></td><td><span class="label">Step actions:</span></td><td><span class="label">Expected Results:</span></td></tr><tr><td width="5">1</td><td><p>&nbsp;Tenter d'acc&eacute;der &agrave; la page de modification de la promotion sans &ecirc;tre connect&eacute;.<span style="white-space:pre">	</span></p></td><td><p>&nbsp;L'acc&egrave;s &agrave; la page de modification est refus&eacute;, une redirection vers la page de connexion est effectu&eacute;e.</p></td></tr><tr><td width="5">2</td><td><p>&nbsp;Observer la r&eacute;ponse du syst&egrave;me lors de l'acc&egrave;s &agrave; la page de modification en tant qu'utilisateur non authentifi&eacute;.<span style="white-space:pre">	</span></p></td><td><p>&nbsp;Un message d'erreur ou une interface indiquant la n&eacute;cessit&eacute; de se connecter devrait &ecirc;tre affich&eacute;.</p>
+<div>&nbsp;</div></td></tr><tr><td width="5">3</td><td><p>&nbsp;Se connecter avec des identifiants valides.<span style="white-space:pre">	</span></p></td><td><p>&nbsp;La connexion r&eacute;ussit et l'utilisateur est redirig&eacute; vers la page de modification de la promotion.</p>
+<div>&nbsp;</div></td></tr><tr><td width="5">4</td><td><p>&nbsp;Acc&eacute;der &agrave; nouveau &agrave; la page de modification de la promotion.<span style="white-space:pre">	</span></p></td><td><p>&nbsp;L'utilisateur est en mesure d'acc&eacute;der &agrave; la page de modification sans &ecirc;tre redirig&eacute; vers la page de connexion.</p>
+<div>&nbsp;</div></td></tr><tr><td width="5">5</td><td><p>&nbsp;Modifier les d&eacute;tails d'une promotion existante.<span style="white-space:pre">	</span></p></td><td><p>&nbsp;Les d&eacute;tails de la promotion sont modifi&eacute;s avec succ&egrave;s et les changements sont enregistr&eacute;s dans le syst&egrave;me.</p>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div></td></tr><tr><td colspan="3"></td></tr><tr><td width="20%" valign="top"><span class="label">Last Result:</span></td><td  colspan="2" ><b>Passed</b></td></tr>
+<tr><td width="20%" valign="top">Build</td><td  colspan="2" >SP2</b></td></tr>
+<tr><td width="20%" valign="top">Tester</td><td  colspan="2" >admin</b></td></tr>
+<tr><td width="20%" valign="top">Execution notes</td><td  colspan="2" >OK</td></tr>
+<tr><td width="20%" valign="top"><span class="label">Requirements</span><td colspan="2">Doc756:  Modification d’une promotion<br /></td></tr>
+<tr><td width="20%" valign="top"><span class="label">Keywords:</span><td colspan="2">&nbsp;None<br></td></tr>
+</table>
+</div>
+<a name='toc_1_1_2'></a>
+<h2 class='doclevel'>1.1.2. Test Suite : Ajout d’une promotion</h2>
+<div><p><span style="font-size: small;">&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; white-space-collapse: break-spaces;">Cette suite de tests vise &agrave; v&eacute;rifier le bon fonctionnement de la fonctionnalit&eacute; d'ajout d'une promotion dans notre application web . Elle comprendra des tests pour v&eacute;rifier que les utilisateurs autoris&eacute;s peuvent ajouter une promotion avec des d&eacute;tails valides, que les promotions ajout&eacute;es sont affich&eacute;es correctement dans la liste des promotions, et que les utilisateurs non autoris&eacute;s ne peuvent pas ajouter de promotion.</span></span></p> 
+ 
+</div><a name="toc_tc347"></a><p>&nbsp;</p><div> <table class="tc" width="90%"><tr><th colspan="3">Test Case Test-31: Ajout d’une promotion</th></tr>
+<tr><td width="20%" valign="top"><span class="label">Author:</span></td><td colspan="2">admin</td></tr>
+<tr><td colspan="3"><span class="label">Summary:</span><br /><p><span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 16px; white-space-collapse: break-spaces;">Ce cas de test v&eacute;rifie que les utilisateurs autoris&eacute;s peuvent ajouter une promotion avec des d&eacute;tails valides et que la promotion ajout&eacute;e est affich&eacute;e correctement dans la liste des promotions.</span></p></td></tr><tr><td colspan="3"><span class="label">Preconditions:</span><br /><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 16px;">L'utilisateur est connect&eacute; &agrave; l'application web.</span><span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 16px;">avec des droits d'administrateur</span><span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 16px;">.</span></p>
+<p><span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 16px;">La page d'ajout d'une promotion est accessible.</span></p></td></tr><tr><td><span class="label">#:</span></td><td><span class="label">Step actions:</span></td><td><span class="label">Expected Results:</span></td></tr><tr><td width="5">1</td><td><p><span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">Acc&eacute;der &agrave; la page d'ajout d'une promotion</span></p></td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">La page d'ajout d'une promotion est affich&eacute;e avec succ&egrave;s</span></p></td></tr><tr><td width="5">2</td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">Saisir les d&eacute;tails valides de la promotion&nbsp;</span></p></td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">Les d&eacute;tails de la promotion sont saisis avec succ&egrave;s</span></p></td></tr><tr><td width="5">3</td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">Cliquer sur le bouton &quot;Ajouter&quot;</span></p></td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">La promotion est ajout&eacute;e avec succ&egrave;s et un message de confirmation est affich&eacute;</span></p></td></tr><tr><td width="5">4</td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">Acc&eacute;der &agrave; la page de la liste des promotions</span></p></td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">La page de la liste des promotions est affich&eacute;e avec succ&egrave;s</span></p></td></tr><tr><td width="5">5</td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">V&eacute;rifier que la promotion ajout&eacute;e est affich&eacute;e dans la liste des promotions avec les d&eacute;tails corrects</span></p></td><td><p>&nbsp;<span style="color: rgb(64, 64, 64); font-family: ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-size: 14px;">La promotion ajout&eacute;e est affich&eacute;e dans la liste des promotions avec les d&eacute;tails corrects</span></p></td></tr><tr><td width="5">6</td><td></td><td></td></tr><tr><td colspan="3"></td></tr><tr><td width="20%" valign="top"><span class="label">Last Result:</span></td><td  colspan="2" ><b>Failed</b></td></tr>
+<tr><td width="20%" valign="top">Build</td><td  colspan="2" >SP2</b></td></tr>
+<tr><td width="20%" valign="top">Tester</td><td  colspan="2" >admin</b></td></tr>
+<tr><td width="20%" valign="top">Execution notes</td><td  colspan="2" >La promotion n'est pas ajoutée  dans la liste des promotions avec les détails corrects</td></tr>
+<tr><td width="20%" valign="top"><span class="label">Requirements</span><td colspan="2">REQ_SPEC_PROMO_1.0:  Ajout d’une promotion<br /></td></tr>
+<tr><td width="20%" valign="top"><span class="label">Keywords:</span><td colspan="2">&nbsp;None<br></td></tr>
+</table>
+</div>
+<a name='toc_1_1_3'></a>
+<h2 class='doclevel'>1.1.3. Test Suite : Suppression d’une promotion</h2>
+<div><p>&nbsp;Cette suite de tests vise &agrave; v&eacute;rifier le processus de suppression d'une promotion dans le syst&egrave;me. Elle comprend un ensemble de cas de tests qui couvrent divers sc&eacute;narios, tels que la suppression d'une promotion active, la gestion des promotions li&eacute;es &agrave; des produits sp&eacute;cifiques, et la v&eacute;rification des permissions requises pour effectuer cette action.</p> 
+</div><a name="toc_tc356"></a><p>&nbsp;</p><div> <table class="tc" width="90%"><tr><th colspan="3">Test Case Test-32: Suppression d’une promotion</th></tr>
+<tr><td width="20%" valign="top"><span class="label">Author:</span></td><td colspan="2">admin</td></tr>
+<tr><td colspan="3"><span class="label">Summary:</span><br /><p><br />
+<a id="fck_paste_padding">﻿</a>Ce cas de test v&eacute;rifie le processus de suppression d'une promotion dans le syst&egrave;me.</p>
+<div>&nbsp;</div></td></tr><tr><td colspan="3"><span class="label">Preconditions:</span><br /><p>&nbsp;L'utilisateur est connect&eacute; au syst&egrave;me avec les autorisations n&eacute;cessaires.</p>
+<div>Il existe au moins une promotion existante dans le syst&egrave;me &agrave; supprimer.</div></td></tr><tr><td><span class="label">#:</span></td><td><span class="label">Step actions:</span></td><td><span class="label">Expected Results:</span></td></tr><tr><td width="5">1</td><td><p>Acc&eacute;der &agrave; la section de gestion des promotions.</p></td><td><p>&nbsp;La section de gestion des promotions s'affiche correctement.</p></td></tr><tr><td width="5">2</td><td><p>&nbsp;2. Identifier la promotion &agrave; supprimer.<span style="white-space:pre">	</span></p></td><td><p>&nbsp;La promotion &agrave; supprimer est identifi&eacute;e avec succ&egrave;s.</p>
+<div>&nbsp;</div></td></tr><tr><td width="5">3</td><td><p>&nbsp;3. S&eacute;lectionner l'option de suppression pour cette promotion.<span style="white-space:pre">	</span></p></td><td><p>&nbsp;L'option de suppression est s&eacute;lectionn&eacute;e avec succ&egrave;s.</p>
+<div>&nbsp;</div></td></tr><tr><td width="5">4</td><td><p>&nbsp;&nbsp;Confirmer la suppression lorsque cela est demand&eacute;.</p></td><td><p>&nbsp;La suppression de la promotion est confirm&eacute;e.</p>
+<div>&nbsp;</div></td></tr><tr><td width="5">5</td><td><p>&nbsp;La promotion s&eacute;lectionn&eacute;e est supprim&eacute;e avec succ&egrave;s.</p></td><td><p>&nbsp;La promotion supprim&eacute;e n'appara&icirc;t plus dans la liste des promotions actives.</p></td></tr><tr><td colspan="3"></td></tr><tr><td width="20%" valign="top"><span class="label">Last Result:</span></td><td  colspan="2" ><b>Failed</b></td></tr>
+<tr><td width="20%" valign="top">Build</td><td  colspan="2" >SP2</b></td></tr>
+<tr><td width="20%" valign="top">Tester</td><td  colspan="2" >admin</b></td></tr>
+<tr><td width="20%" valign="top">Execution notes</td><td  colspan="2" >Suppression fait mais la liste n'est pas mise à jour</td></tr>
+<tr><td width="20%" valign="top"><span class="label">Requirements</span><td colspan="2">Doc235:  Suppression d’une promotion<br /></td></tr>
+<tr><td width="20%" valign="top"><span class="label">Keywords:</span><td colspan="2">&nbsp;None<br></td></tr>
+</table>
+</div>
+<h1 class="doclevel">Reports and Metrics</h1>
+<div>
+<p></p>
+</div>
+
+</body>
+</html>

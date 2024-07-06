@@ -1,12 +1,16 @@
 package tn.esprit.projetPI.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.io.Serializable;
 
 @Entity
-public class Proposition {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Proposition implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,9 +18,9 @@ public class Proposition {
 
     private String detail;
     private double amount;
-    private Date date;
+    private String status;
 
-    private String status = "PENDING"; // Default status
+    private String filePath;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
@@ -25,21 +29,22 @@ public class Proposition {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties("propositions") // To avoid circular reference with User
     private User user;
-
-    // Constructors, getters, and setters
 
     public Proposition() {
     }
 
-    public Proposition(String detail, double amount, Date date, Project project, User user) {
+    public Proposition(String detail, double amount, String status, Project project, User user, String filePath) {
         this.detail = detail;
         this.amount = amount;
-        this.date = date;
+        this.status = status;
         this.project = project;
         this.user = user;
+        this.filePath = filePath;
     }
 
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -64,20 +69,20 @@ public class Proposition {
         this.amount = amount;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public Project getProject() {

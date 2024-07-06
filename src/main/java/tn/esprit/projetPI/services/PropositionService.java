@@ -1,13 +1,18 @@
 package tn.esprit.projetPI.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.dto.PropositionDTO;
+import tn.esprit.projetPI.dto.DtoMapper;
 import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.Project;
+import tn.esprit.projetPI.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.repository.PropositionRepository;
-import tn.esprit.projetPI.repository.ProjectRepository;
+import tn.esprit.projetPI.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PropositionService implements IPropositionService {
@@ -16,32 +21,48 @@ public class PropositionService implements IPropositionService {
     private PropositionRepository propositionRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private EmailService emailService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
-    public List<Proposition> retrieveAllPropositions() {
-        return propositionRepository.findAll();
+    public List<PropositionDTO> retrieveAllPropositions() {
+        List<Proposition> propositions = propositionRepository.findAll();
+        return propositions.stream()
+                .map(DtoMapper::toPropositionDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PropositionDTO> getPropositionsByProjectId(Long projectId) {
+        List<Proposition> propositions = propositionRepository.findByProjectId(projectId);
+        return propositions.stream()
+                .map(DtoMapper::toPropositionDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Proposition addProposition(Proposition proposition) {
-        proposition.setStatus("PENDING"); // Set default status
-        return propositionRepository.save(proposition);
+        Proposition savedProposition = propositionRepository.save(proposition);
+
+        // Send notification
+        notificationService.sendNewPropositionNotification(proposition.getProject().getUser(), proposition.getProject().getTitle());
+
+        return savedProposition;
     }
 
     @Override
     public Proposition updateProposition(Long id, Proposition propositionDetails) {
-        Proposition existingProposition = propositionRepository.findById(id).orElseThrow(() -> new RuntimeException("Proposition not found"));
+        Proposition existingProposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proposition not found"));
 
-        if (propositionDetails.getDetail() != null) {
-            existingProposition.setDetail(propositionDetails.getDetail());
-        }
-        if (propositionDetails.getAmount() != 0) {
-            existingProposition.setAmount(propositionDetails.getAmount());
-        }
-        if (propositionDetails.getDate() != null) {
-            existingProposition.setDate(propositionDetails.getDate());
-        }
+        existingProposition.setDetail(propositionDetails.getDetail());
+        existingProposition.setAmount(propositionDetails.getAmount());
+        existingProposition.setStatus(propositionDetails.getStatus());
 
         return propositionRepository.save(existingProposition);
     }
@@ -52,27 +73,61 @@ public class PropositionService implements IPropositionService {
     }
 
     @Override
-    public List<Proposition> getPropositionsByProjectId(Long projectId) {
-        return propositionRepository.findByProjectId(projectId);
-    }
-
-    @Override
     public Proposition approveProposition(Long id, String username) {
-        Proposition proposition = propositionRepository.findById(id).orElseThrow(() -> new RuntimeException("Proposition not found"));
-        Project project = proposition.getProject();
-
-        if (!project.getUser().getUsername().equals(username)) {
-            throw new RuntimeException("You are not authorized to approve this proposition.");
-        }
-
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proposition not found"));
         proposition.setStatus("APPROVED");
-        return propositionRepository.save(proposition);
+        Proposition approvedProposition = propositionRepository.save(proposition);
+
+        // Send email notification
+        emailService.sendPropositionStatusEmail(proposition.getUser().getEmail(), "APPROVED");
+
+        return approvedProposition;
     }
 
     @Override
     public Proposition declineProposition(Long id) {
-        Proposition proposition = propositionRepository.findById(id).orElseThrow(() -> new RuntimeException("Proposition not found"));
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proposition not found"));
         proposition.setStatus("DECLINED");
-        return propositionRepository.save(proposition);
+        Proposition declinedProposition = propositionRepository.save(proposition);
+
+        // Send email notification
+        emailService.sendPropositionStatusEmail(proposition.getUser().getEmail(), "DECLINED");
+
+        return declinedProposition;
+    }
+
+    @Override
+    public List<PropositionDTO.UserDTO> getUsersWithApprovedPropositions() {
+        List<Proposition> approvedPropositions = propositionRepository.findByStatus("APPROVED");
+        List<PropositionDTO.UserDTO> users = new ArrayList<>();
+
+        for (Proposition proposition : approvedPropositions) {
+            User user = proposition.getUser();
+            PropositionDTO.UserDTO userDTO = new PropositionDTO.UserDTO(user.getId(), user.getUsername(), user.getEmail(), proposition.getProject().getId());
+            users.add(userDTO);
+        }
+
+        return users;
+    }
+
+    @Override
+    public List<PropositionDTO.UserDTO> getUsersWithApprovedPropositionsForProjectOwner(String ownerUsername) {
+        List<Proposition> approvedPropositions = propositionRepository.findByStatus("APPROVED");
+        List<PropositionDTO.UserDTO> users = new ArrayList<>();
+
+        for (Proposition proposition : approvedPropositions) {
+            Project project = proposition.getProject();
+            User owner = project.getUser();
+
+            if (owner.getUsername().equals(ownerUsername)) {
+                User user = proposition.getUser();
+                PropositionDTO.UserDTO userDTO = new PropositionDTO.UserDTO(user.getId(), user.getUsername(), user.getEmail(), project.getId());
+                users.add(userDTO);
+            }
+        }
+
+        return users;
     }
 }
