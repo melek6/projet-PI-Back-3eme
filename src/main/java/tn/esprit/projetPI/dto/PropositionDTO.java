@@ -45,6 +45,19 @@ public class PropositionDTO {
         private Long id;
         private String username;
         private String email;
+        private Long projectId; // Include projectId if needed
+
+        // No-argument constructor
+        public UserDTO() {
+        }
+
+        // Argument constructor
+        public UserDTO(Long id, String username, String email, Long projectId) {
+            this.id = id;
+            this.username = username;
+            this.email = email;
+            this.projectId = projectId;
+        }
 
         // Getters and setters
         public Long getId() {
@@ -69,6 +82,14 @@ public class PropositionDTO {
 
         public void setEmail(String email) {
             this.email = email;
+        }
+
+        public Long getProjectId() {
+            return projectId;
+        }
+
+        public void setProjectId(Long projectId) {
+            this.projectId = projectId;
         }
     }
 

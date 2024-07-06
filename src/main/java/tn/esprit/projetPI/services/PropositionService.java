@@ -1,14 +1,16 @@
 package tn.esprit.projetPI.services;
 
+import tn.esprit.projetPI.dto.PropositionDTO;
+import tn.esprit.projetPI.dto.DtoMapper;
+import tn.esprit.projetPI.models.Proposition;
+import tn.esprit.projetPI.models.Project;
+import tn.esprit.projetPI.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tn.esprit.projetPI.dto.DtoMapper;
-import tn.esprit.projetPI.dto.PropositionDTO;
-import tn.esprit.projetPI.models.Proposition;
-import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.PropositionRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,5 +96,38 @@ public class PropositionService implements IPropositionService {
         emailService.sendPropositionStatusEmail(proposition.getUser().getEmail(), "DECLINED");
 
         return declinedProposition;
+    }
+
+    @Override
+    public List<PropositionDTO.UserDTO> getUsersWithApprovedPropositions() {
+        List<Proposition> approvedPropositions = propositionRepository.findByStatus("APPROVED");
+        List<PropositionDTO.UserDTO> users = new ArrayList<>();
+
+        for (Proposition proposition : approvedPropositions) {
+            User user = proposition.getUser();
+            PropositionDTO.UserDTO userDTO = new PropositionDTO.UserDTO(user.getId(), user.getUsername(), user.getEmail(), proposition.getProject().getId());
+            users.add(userDTO);
+        }
+
+        return users;
+    }
+
+    @Override
+    public List<PropositionDTO.UserDTO> getUsersWithApprovedPropositionsForProjectOwner(String ownerUsername) {
+        List<Proposition> approvedPropositions = propositionRepository.findByStatus("APPROVED");
+        List<PropositionDTO.UserDTO> users = new ArrayList<>();
+
+        for (Proposition proposition : approvedPropositions) {
+            Project project = proposition.getProject();
+            User owner = project.getUser();
+
+            if (owner.getUsername().equals(ownerUsername)) {
+                User user = proposition.getUser();
+                PropositionDTO.UserDTO userDTO = new PropositionDTO.UserDTO(user.getId(), user.getUsername(), user.getEmail(), project.getId());
+                users.add(userDTO);
+            }
+        }
+
+        return users;
     }
 }
