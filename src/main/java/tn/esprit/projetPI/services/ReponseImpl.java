@@ -2,7 +2,9 @@ package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.models.Question;
 import tn.esprit.projetPI.models.Reponse;
+import tn.esprit.projetPI.repository.QuestionRepository;
 import tn.esprit.projetPI.repository.ReponseRepository;
 
 import java.util.List;
@@ -13,7 +15,13 @@ public class ReponseImpl {
     @Autowired
     private ReponseRepository reponseRepository;
 
-    public Reponse saveOrUpdateReponse(Reponse reponse) {
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    public Reponse saveOrUpdateReponse(Reponse reponse, Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new RuntimeException("Question not found"));
+        reponse.setQuestion(question);
         return reponseRepository.save(reponse);
     }
 
@@ -33,6 +41,8 @@ public class ReponseImpl {
         return reponseRepository.findById(id).map(reponse -> {
             reponse.setContent(reponseDetails.getContent());
             reponse.setIscorrect(reponseDetails.getIscorrect());
+            reponse.setQuestion(questionRepository.findById(reponseDetails.getQuestion().getId())
+                    .orElseThrow(() -> new RuntimeException("Question not found")));
             return reponseRepository.save(reponse);
         });
     }

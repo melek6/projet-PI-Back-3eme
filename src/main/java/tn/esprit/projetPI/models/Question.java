@@ -18,16 +18,7 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Reponse> reponses;
 
-    // Getter and Setter for quiz
-    public Quiz getQuiz() {
-        return quiz;
-    }
-
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
-    }
-
-    // Other getters and setters
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -52,9 +43,17 @@ public class Question {
         this.type = type;
     }
 
-    public List<Reponse> getReponses() {
-        return reponses;
+   /* public Quiz getQuiz() {
+        return quiz;
+    }*/
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
+
+  /* public List<Reponse> getReponses() {
+        return reponses;
+    }*/
 
     public void setReponses(List<Reponse> reponses) {
         this.reponses = reponses;

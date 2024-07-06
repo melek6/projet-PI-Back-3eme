@@ -27,6 +27,10 @@ public class Reponse {
         return iscorrect;
     }
 
+   public Question getQuestion() {
+        return question;
+    }
+
     // Setters
     public void setId(Long id) {
         this.id = id;
@@ -38,5 +42,9 @@ public class Reponse {
 
     public void setIscorrect(Boolean iscorrect) {
         this.iscorrect = iscorrect;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 }
