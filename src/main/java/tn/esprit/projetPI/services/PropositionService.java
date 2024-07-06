@@ -16,6 +16,9 @@ public class PropositionService implements IPropositionService {
     @Autowired
     private PropositionRepository propositionRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     @Override
     public List<PropositionDTO> retrieveAllPropositions() {
         List<Proposition> propositions = propositionRepository.findAll();
@@ -44,7 +47,6 @@ public class PropositionService implements IPropositionService {
 
         existingProposition.setDetail(propositionDetails.getDetail());
         existingProposition.setAmount(propositionDetails.getAmount());
-        existingProposition.setDate(propositionDetails.getDate());
         existingProposition.setStatus(propositionDetails.getStatus());
 
         return propositionRepository.save(existingProposition);
@@ -60,7 +62,12 @@ public class PropositionService implements IPropositionService {
         Proposition proposition = propositionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proposition not found"));
         proposition.setStatus("APPROVED");
-        return propositionRepository.save(proposition);
+        Proposition approvedProposition = propositionRepository.save(proposition);
+
+        // Send email notification
+        emailService.sendPropositionStatusEmail(proposition.getUser().getEmail(), "APPROVED");
+
+        return approvedProposition;
     }
 
     @Override
@@ -68,6 +75,11 @@ public class PropositionService implements IPropositionService {
         Proposition proposition = propositionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proposition not found"));
         proposition.setStatus("DECLINED");
-        return propositionRepository.save(proposition);
+        Proposition declinedProposition = propositionRepository.save(proposition);
+
+        // Send email notification
+        emailService.sendPropositionStatusEmail(proposition.getUser().getEmail(), "DECLINED");
+
+        return declinedProposition;
     }
 }

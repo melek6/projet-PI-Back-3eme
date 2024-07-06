@@ -1,8 +1,10 @@
 package tn.esprit.projetPI.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.Project;
@@ -11,6 +13,10 @@ import tn.esprit.projetPI.repository.ProjectRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.services.IPropositionService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -27,6 +33,8 @@ public class PropositionController {
     @Autowired
     private UserRepository userRepository;
 
+    private static final String UPLOADED_FOLDER = "C:/Users/Iyed/Documents/GitHub/projet-PI-Back-3eme/uploads/";
+
     @GetMapping
     public List<PropositionDTO> getAllPropositions() {
         return propositionService.retrieveAllPropositions();
@@ -37,35 +45,67 @@ public class PropositionController {
         return propositionService.getPropositionsByProjectId(projectId);
     }
 
-    @PostMapping(value = "/{projectId}", consumes = "application/json", produces = "application/json")
-    public Proposition createProposition(@PathVariable Long projectId, @RequestBody Proposition proposition) {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
-        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    @PostMapping(value = "/{projectId}", consumes = {"multipart/form-data"})
+    public ResponseEntity<Proposition> createProposition(
+            @PathVariable Long projectId,
+            @RequestParam("detail") String detail,
+            @RequestParam("amount") double amount,
+            @RequestParam("file") MultipartFile file) {
 
-        proposition.setProject(project);
-        proposition.setUser(user);
-        proposition.setStatus("PENDING"); // Default status
-        return propositionService.addProposition(proposition);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + projectId));
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+
+        String filePath = saveUploadedFile(file);
+
+        Proposition proposition = new Proposition(detail, amount, "PENDING", project, user, filePath);
+        Proposition savedProposition = propositionService.addProposition(proposition);
+        return ResponseEntity.ok(savedProposition);
+    }
+
+    private String saveUploadedFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            return null;
+        }
+
+        try {
+            // Ensure the directory exists
+            Path directory = Paths.get(UPLOADED_FOLDER);
+            if (!Files.exists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            byte[] bytes = file.getBytes();
+            Path path = directory.resolve(file.getOriginalFilename());
+            Files.write(path, bytes);
+            return path.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file", e);
+        }
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-    public Proposition updateProposition(@PathVariable Long id, @RequestBody Proposition propositionDetails) {
-        return propositionService.updateProposition(id, propositionDetails);
+    public ResponseEntity<Proposition> updateProposition(@PathVariable Long id, @RequestBody Proposition propositionDetails) {
+        Proposition updatedProposition = propositionService.updateProposition(id, propositionDetails);
+        return ResponseEntity.ok(updatedProposition);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProposition(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProposition(@PathVariable Long id) {
         propositionService.deleteProposition(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/approve")
-    public Proposition approveProposition(@PathVariable Long id) {
-        return propositionService.approveProposition(id, SecurityContextHolder.getContext().getAuthentication().getName());
+    public ResponseEntity<Proposition> approveProposition(@PathVariable Long id) {
+        Proposition approvedProposition = propositionService.approveProposition(id, SecurityContextHolder.getContext().getAuthentication().getName());
+        return ResponseEntity.ok(approvedProposition);
     }
 
     @PostMapping("/{id}/decline")
-    public Proposition declineProposition(@PathVariable Long id) {
-        return propositionService.declineProposition(id);
+    public ResponseEntity<Proposition> declineProposition(@PathVariable Long id) {
+        Proposition declinedProposition = propositionService.declineProposition(id);
+        return ResponseEntity.ok(declinedProposition);
     }
 }

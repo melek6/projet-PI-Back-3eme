@@ -18,8 +18,9 @@ public class Proposition implements Serializable {
 
     private String detail;
     private double amount;
-    private String date;
     private String status;
+
+    private String filePath;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
@@ -34,13 +35,13 @@ public class Proposition implements Serializable {
     public Proposition() {
     }
 
-    public Proposition(String detail, double amount, String date, String status, Project project, User user) {
+    public Proposition(String detail, double amount, String status, Project project, User user, String filePath) {
         this.detail = detail;
         this.amount = amount;
-        this.date = date;
         this.status = status;
         this.project = project;
         this.user = user;
+        this.filePath = filePath;
     }
 
     // Getters and setters
@@ -68,20 +69,20 @@ public class Proposition implements Serializable {
         this.amount = amount;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public Project getProject() {

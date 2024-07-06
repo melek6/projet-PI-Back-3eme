@@ -8,6 +8,7 @@ public class PropositionDTO {
     private String date;
     private String status;
     private ProjectDTO project;
+    private UserDTO user; // Add this field
 
     public static class ProjectDTO {
         private Long id;
@@ -37,6 +38,37 @@ public class PropositionDTO {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+    }
+
+    public static class UserDTO {
+        private Long id;
+        private String username;
+        private String email;
+
+        // Getters and setters
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
         }
     }
 
@@ -87,5 +119,13 @@ public class PropositionDTO {
 
     public void setProject(ProjectDTO project) {
         this.project = project;
+    }
+
+    public UserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 }
