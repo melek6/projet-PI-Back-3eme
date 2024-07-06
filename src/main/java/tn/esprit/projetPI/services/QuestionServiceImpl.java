@@ -10,24 +10,25 @@ import tn.esprit.projetPI.models.Quiz;
 import java.util.List;
 import java.util.Optional;
 
+// QuestionController.java
 @RestController
 @RequestMapping("/api/questions")
+@CrossOrigin(origins = "http://localhost:4200") // Allow CORS for Angular frontend
 public class QuestionServiceImpl {
     @Autowired
     private QuestionImpl questionService;
 
     @PostMapping
-    public ResponseEntity<Question> createOrUpdateQuestion(@RequestBody Question question) {
-        // Suppose quizId is the ID of the quiz to which this question belongs
-        Long quizId = question.getQuiz().getId(); // Assuming you have a getter for Quiz in Question entity
-        Quiz quiz = new Quiz();
-        quiz.setId(quizId);
+    public ResponseEntity<Question> createOrUpdateQuestion(@RequestBody Question question, @RequestParam Long quizId) {
+        //try {
 
-        // Set the quiz for the question
-        question.setQuiz(quiz);
+            Question savedQuestion = questionService.saveOrUpdateQuestion(question, quizId);
 
-        Question savedQuestion = questionService.saveOrUpdateQuestion(question);
-        return new ResponseEntity<>(savedQuestion, HttpStatus.CREATED);
+
+            return new ResponseEntity<>(savedQuestion, HttpStatus.CREATED);
+//        } catch (RuntimeException e) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
     }
 
     @GetMapping("/{id}")
@@ -55,4 +56,9 @@ public class QuestionServiceImpl {
         return updatedQuestion.map(question -> new ResponseEntity<>(question, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+ /*   @GetMapping("/{id}/responses")
+    public List<String> getReponsesByQuestionId(@PathVariable Long id) {
+        return questionService.getReponseContentByQuestionId(id);
+    }*/
 }

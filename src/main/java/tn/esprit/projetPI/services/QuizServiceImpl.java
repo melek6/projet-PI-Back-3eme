@@ -16,6 +16,8 @@ public class QuizServiceImpl {
 
     @Autowired
     private QuizImpl quizService;
+    @Autowired
+    private TentativeService tentativeService;
 
     @PostMapping
     public ResponseEntity<Quiz> createOrUpdateQuiz(@RequestBody Quiz quiz) {
@@ -51,7 +53,7 @@ public class QuizServiceImpl {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/{id}/questions")
+    @GetMapping("questions/{id}")
     public ResponseEntity<List<Question>> getQuestionsByQuizId(@PathVariable Long id) {
         try {
             List<Question> questions = quizService.getQuestionsByQuizId(id);
@@ -59,5 +61,14 @@ public class QuizServiceImpl {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+    @GetMapping("/{quizId}/participate")
+    public ResponseEntity<?> participateInQuiz(@PathVariable Long quizId, @RequestParam Long userId) {
+        if (tentativeService.hasUserAttemptedQuiz(userId, quizId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You have already attempted this quiz.");
+        }
+        tentativeService.recordQuizAttempt(userId, quizId);
+        // Logic to start the quiz
+        return ResponseEntity.ok("Quiz started");
     }
 }

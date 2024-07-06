@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.projetPI.models.Reponse;
+import tn.esprit.projetPI.repository.QuestionRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,12 @@ public class ReponseServiceImpl {
     @Autowired
     private ReponseImpl reponseService;
 
+    @Autowired
+    private QuestionRepository questionRepository;
+
     @PostMapping
-    public ResponseEntity<Reponse> createOrUpdateReponse(@RequestBody Reponse reponse) {
-        Reponse savedReponse = reponseService.saveOrUpdateReponse(reponse);
+    public ResponseEntity<Reponse> createOrUpdateReponse(@RequestBody Reponse reponse, @RequestParam Long questionId) {
+        Reponse savedReponse = reponseService.saveOrUpdateReponse(reponse, questionId);
         return new ResponseEntity<>(savedReponse, HttpStatus.CREATED);
     }
 
@@ -41,7 +45,7 @@ public class ReponseServiceImpl {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reponse> updateReponse(@PathVariable Long id, @RequestBody Reponse reponseDetails) {
+    public ResponseEntity<Reponse> updateReponse(@PathVariable Long id, @RequestBody Reponse reponseDetails, @RequestParam Long questionId) {
         Optional<Reponse> updatedReponse = reponseService.updateReponse(id, reponseDetails);
         return updatedReponse.map(reponse -> new ResponseEntity<>(reponse, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

@@ -22,6 +22,13 @@ public class Quiz {
     @JoinColumn(name = "user_id")
     private User user; // User who created the Quiz
 
+    public Quiz(Long quizId) {
+    }
+
+    public Quiz() {
+
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
