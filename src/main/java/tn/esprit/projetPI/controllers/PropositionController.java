@@ -1,17 +1,17 @@
 package tn.esprit.projetPI.controllers;
 
+import tn.esprit.projetPI.dto.PropositionDTO;
+import tn.esprit.projetPI.models.Project;
+import tn.esprit.projetPI.models.Proposition;
+import tn.esprit.projetPI.models.User;
+import tn.esprit.projetPI.repository.ProjectRepository;
+import tn.esprit.projetPI.repository.UserRepository;
+import tn.esprit.projetPI.services.IPropositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tn.esprit.projetPI.dto.PropositionDTO;
-import tn.esprit.projetPI.models.Proposition;
-import tn.esprit.projetPI.models.Project;
-import tn.esprit.projetPI.models.User;
-import tn.esprit.projetPI.repository.ProjectRepository;
-import tn.esprit.projetPI.repository.UserRepository;
-import tn.esprit.projetPI.services.IPropositionService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -108,4 +108,11 @@ public class PropositionController {
         Proposition declinedProposition = propositionService.declineProposition(id);
         return ResponseEntity.ok(declinedProposition);
     }
+
+    @GetMapping("/users-with-approved-propositions-for-owner")
+    public List<PropositionDTO.UserDTO> getUsersWithApprovedPropositionsForProjectOwner() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return propositionService.getUsersWithApprovedPropositionsForProjectOwner(username);
+    }
 }
+

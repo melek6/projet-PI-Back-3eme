@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface PropositionRepository extends JpaRepository<Proposition, Long> {
     List<Proposition> findByProjectId(Long projectId);
+
+    List<Proposition> findByStatus(String status);
 }
