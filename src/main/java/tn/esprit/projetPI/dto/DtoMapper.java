@@ -2,6 +2,7 @@ package tn.esprit.projetPI.dto;
 
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.Proposition;
+import tn.esprit.projetPI.models.User;
 
 public class DtoMapper {
 
@@ -10,7 +11,6 @@ public class DtoMapper {
         dto.setId(proposition.getId());
         dto.setDetail(proposition.getDetail());
         dto.setAmount(proposition.getAmount());
-        dto.setDate(proposition.getDate());
         dto.setStatus(proposition.getStatus());
 
         Project project = proposition.getProject();
@@ -20,6 +20,15 @@ public class DtoMapper {
             projectDTO.setTitle(project.getTitle());
             projectDTO.setDescription(project.getDescription());
             dto.setProject(projectDTO);
+        }
+
+        User user = proposition.getUser();
+        if (user != null) {
+            PropositionDTO.UserDTO userDTO = new PropositionDTO.UserDTO();
+            userDTO.setId(user.getId());
+            userDTO.setUsername(user.getUsername());
+            userDTO.setEmail(user.getEmail());
+            dto.setUser(userDTO);
         }
 
         return dto;

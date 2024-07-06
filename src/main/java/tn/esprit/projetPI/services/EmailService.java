@@ -54,6 +54,14 @@ public class EmailService {
                 project.getNbPropositions());
     }
 
+    public void sendPropositionStatusEmail(String toEmail, String status) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Proposition Status Update");
+        message.setText("Your proposition has been " + status + ".");
+        mailSender.send(message);
+    }
+
 }
 
 
