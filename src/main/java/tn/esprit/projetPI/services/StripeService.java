@@ -24,6 +24,21 @@ public class StripeService {
         Stripe.apiKey = stripeApiKey;
     }
 
+    public Token createCardToken(String cardNumber, int expMonth, int expYear, String cvc) throws StripeException {
+        TokenCreateParams.Card card = TokenCreateParams.Card.builder()
+                .setNumber(cardNumber)
+                .setExpMonth(String.valueOf((long) expMonth))
+                .setExpYear(String.valueOf((long) expYear))
+                .setCvc(cvc)
+                .build();
+
+        TokenCreateParams params = TokenCreateParams.builder()
+                .setCard(card)
+                .build();
+
+        return Token.create(params);
+    }
+
     public Charge chargeCreditCard(String token, double amount) throws StripeException {
         Map<String, Object> chargeParams = new HashMap<>();
         chargeParams.put("amount", (int)(amount * 100)); // Amount in cents
