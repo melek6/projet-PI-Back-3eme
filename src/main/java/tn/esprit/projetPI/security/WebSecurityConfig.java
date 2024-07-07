@@ -91,6 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 				.antMatchers("/password-reset/**").permitAll()
 				.antMatchers("/api/admin/**").hasRole("ADMIN")
+				.antMatchers("/api/payment/charge").authenticated()
 				.anyRequest().authenticated()
 				.and()
 				.oauth2Login()
