@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.projetPI.models.Chat;
 import tn.esprit.projetPI.models.Message;
+import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.services.IChatService;
 
 import java.util.List;
@@ -41,5 +42,10 @@ public class ChatController {
     @PutMapping("/message/{chatId}")
     public ResponseEntity<Chat> addMessage(@RequestBody Message message, @PathVariable Long chatId) {
         return new ResponseEntity<>(chatService.addMessage(message, chatId), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return new ResponseEntity<>(chatService.getAllUsers(), HttpStatus.OK);
     }
 }

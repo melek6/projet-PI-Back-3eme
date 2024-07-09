@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.models.Chat;
 import tn.esprit.projetPI.models.Message;
+import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.ChatRepository;
+import tn.esprit.projetPI.repository.UserRepository;
 
 import java.util.List;
 
@@ -14,8 +16,18 @@ public class ChatService implements IChatService {
     @Autowired
     private ChatRepository chatRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public Chat addChat(Chat chat) {
+        User firstUser = userRepository.findByUsername(chat.getFirstUser().getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found: " + chat.getFirstUser().getUsername()));
+        User secondUser = userRepository.findByUsername(chat.getSecondUser().getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found: " + chat.getSecondUser().getUsername()));
+
+        chat.setFirstUser(firstUser);
+        chat.setSecondUser(secondUser);
         return chatRepository.save(chat);
     }
 
@@ -30,16 +42,6 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public List<Chat> getChatByFirstUserUsername(String username) {
-        return chatRepository.findByFirstUserUsername(username);
-    }
-
-    @Override
-    public List<Chat> getChatBySecondUserUsername(String username) {
-        return chatRepository.findBySecondUserUsername(username);
-    }
-
-    @Override
     public List<Chat> getChatByFirstUserUsernameOrSecondUserUsername(String username) {
         return chatRepository.findByFirstUserUsernameOrSecondUserUsername(username, username);
     }
@@ -50,5 +52,10 @@ public class ChatService implements IChatService {
         message.setChat(chat);
         chat.getMessageList().add(message);
         return chatRepository.save(chat);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
