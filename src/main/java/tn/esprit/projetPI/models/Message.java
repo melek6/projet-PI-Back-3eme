@@ -1,7 +1,8 @@
 package tn.esprit.projetPI.models;
 
 import javax.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Message {
@@ -11,24 +12,31 @@ public class Message {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_id", nullable = false)
-    private Chat chat;
+    @JoinColumn(name = "user_from_id", nullable = false)
+    private User userFrom;
 
-    private String senderUsername;
-    private Date time;
-    private String replyMessage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_to_id", nullable = false)
+    private User userTo;
 
+    @Column(nullable = false)
+    private String text;
+
+    @Column(nullable = false)
+    private LocalDateTime sendTime;
+
+    // Constructors
     public Message() {
-        this.time = new Date();
     }
 
-    public Message(String senderUsername, String replyMessage, Chat chat) {
-        this.senderUsername = senderUsername;
-        this.replyMessage = replyMessage;
-        this.time = new Date();
-        this.chat = chat;
+    public Message(User userFrom, User userTo, String text, LocalDateTime sendTime) {
+        this.userFrom = userFrom;
+        this.userTo = userTo;
+        this.text = text;
+        this.sendTime = sendTime;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -37,35 +45,35 @@ public class Message {
         this.id = id;
     }
 
-    public String getSenderUsername() {
-        return senderUsername;
+    public User getUserFrom() {
+        return userFrom;
     }
 
-    public void setSenderUsername(String senderUsername) {
-        this.senderUsername = senderUsername;
+    public void setUserFrom(User userFrom) {
+        this.userFrom = userFrom;
     }
 
-    public Date getTime() {
-        return time;
+    public User getUserTo() {
+        return userTo;
     }
 
-    public void setTime(Date time) {
-        this.time = time;
+    public void setUserTo(User userTo) {
+        this.userTo = userTo;
     }
 
-    public String getReplyMessage() {
-        return replyMessage;
+    public String getText() {
+        return text;
     }
 
-    public void setReplyMessage(String replyMessage) {
-        this.replyMessage = replyMessage;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public Chat getChat() {
-        return chat;
+    public LocalDateTime getSendTime() {
+        return sendTime;
     }
 
-    public void setChat(Chat chat) {
-        this.chat = chat;
+    public void setSendTime(LocalDateTime sendTime) {
+        this.sendTime = sendTime;
     }
 }

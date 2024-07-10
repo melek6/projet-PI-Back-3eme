@@ -1,5 +1,6 @@
 package tn.esprit.projetPI.services;
 
+import tn.esprit.projetPI.dto.UserDTO;
 import tn.esprit.projetPI.models.Candidature;
 import tn.esprit.projetPI.models.ERole;
 import tn.esprit.projetPI.models.User;
@@ -14,4 +15,6 @@ public interface UserServiceint {
 User getUserById(long id);
     List<User> getAllUsers();
     public User blockUser(Long id);
+
+    List<UserDTO> getAllUsersDTO();
 }

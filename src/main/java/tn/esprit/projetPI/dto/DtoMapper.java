@@ -1,6 +1,7 @@
 package tn.esprit.projetPI.dto;
 
 import org.springframework.stereotype.Component;
+import tn.esprit.projetPI.models.Message;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.User;
@@ -48,4 +49,31 @@ public class DtoMapper {
 
         return dto;
     }
+
+    public static MessageDTO toMessageDTO(Message message) {
+        MessageDTO dto = new MessageDTO();
+        dto.setId(message.getId());
+        dto.setText(message.getText());
+        dto.setSendTime(message.getSendTime());
+
+        User userFrom = message.getUserFrom();
+        if (userFrom != null) {
+            dto.setUserFromId(userFrom.getId());
+            dto.setUserFromUsername(userFrom.getUsername());
+        }
+
+        User userTo = message.getUserTo();
+        if (userTo != null) {
+            dto.setUserToId(userTo.getId());
+            dto.setUserToUsername(userTo.getUsername());
+        }
+
+        return dto;
+    }
+
+    public static UserDTO toUserDTO(User user) {
+        return new UserDTO(user.getId(), user.getUsername());
+    }
+
+
 }
