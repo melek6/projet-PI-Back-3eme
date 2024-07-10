@@ -1,6 +1,7 @@
 package tn.esprit.projetPI.services;
 
 
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.controllers.ResourceNotFoundException;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.dto.DtoMapper;
@@ -12,14 +13,13 @@ import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.repository.PropositionRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
+
 @Service
 public class PropositionService implements IPropositionService {
 
@@ -140,7 +140,6 @@ public class PropositionService implements IPropositionService {
         return users;
     }
 
-
     @Override
     public List<PropositionDTO> getPropositionsByUser(String username) {
         User user = userRepository.findByUsername(username)
@@ -164,7 +163,7 @@ public class PropositionService implements IPropositionService {
     }
 
     @Override
-    public Proposition updateUserProposition(Long id, String username, String detail, double amount, String filePath, boolean removeExistingFile) {
+    public Proposition updateUserProposition(Long id, String username, String detail, double amount, MultipartFile file, boolean removeExistingFile) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
         Proposition proposition = propositionRepository.findById(id)
@@ -176,16 +175,30 @@ public class PropositionService implements IPropositionService {
         proposition.setDetail(detail);
         proposition.setAmount(amount);
 
-        if (removeExistingFile && proposition.getFilePath() != null) {
-            // Delete the existing file from Firebase
-            firebaseStorageService.deleteFile(proposition.getFilePath());
-            proposition.setFilePath(null);
-        }
+        try {
+            if (removeExistingFile && proposition.getFilePath() != null) {
+                // Delete the existing file
+                firebaseStorageService.deleteFile(proposition.getFilePath());
+                proposition.setFilePath(null);
+            }
 
-        if (filePath != null) {
-            proposition.setFilePath(filePath);
+            if (file != null && !file.isEmpty()) {
+                String filePath = firebaseStorageService.uploadFile(file);
+                proposition.setFilePath(filePath);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to handle file operations", e);
         }
 
         return propositionRepository.save(proposition);
+    }
+
+    @Override
+    public String uploadFileToFirebase(MultipartFile file) {
+        try {
+            return firebaseStorageService.uploadFile(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file to Firebase", e);
+        }
     }
 }

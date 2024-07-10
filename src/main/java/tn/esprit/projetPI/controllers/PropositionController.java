@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/propositions")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -32,12 +31,7 @@ public class PropositionController {
     private ProjectRepository projectRepository;
 
     @Autowired
-    private FirebaseStorageService firebaseStorageService;
-
-    @Autowired
     private UserRepository userRepository;
-
-    private static final String UPLOADED_FOLDER = "C:/Users/SBS/Desktop/projet-PI-Back-3eme/uploads/";
 
     @GetMapping
     public List<PropositionDTO> getAllPropositions() {
@@ -61,40 +55,11 @@ public class PropositionController {
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
 
-        String filePath = null;
-        if (file != null && !file.isEmpty()) {
-            try {
-                filePath = firebaseStorageService.uploadFile(file);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload file", e);
-            }
-        }
+        String filePath = propositionService.uploadFileToFirebase(file);
 
         Proposition proposition = new Proposition(detail, amount, "PENDING", project, user, filePath);
         Proposition savedProposition = propositionService.addProposition(proposition);
         return ResponseEntity.ok(savedProposition);
-    }
-
-
-    private String saveUploadedFile(MultipartFile file) {
-        if (file.isEmpty()) {
-            return null;
-        }
-
-        try {
-            // Ensure the directory exists
-            Path directory = Paths.get(UPLOADED_FOLDER);
-            if (!Files.exists(directory)) {
-                Files.createDirectories(directory);
-            }
-
-            byte[] bytes = file.getBytes();
-            Path path = directory.resolve(file.getOriginalFilename());
-            Files.write(path, bytes);
-            return path.toString();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to store file", e);
-        }
     }
 
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
@@ -149,19 +114,7 @@ public class PropositionController {
             @RequestParam(value = "removeExistingFile", required = false, defaultValue = "false") boolean removeExistingFile) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        String filePath = null;
-        if (file != null && !file.isEmpty()) {
-            try {
-                filePath = firebaseStorageService.uploadFile(file);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload file", e);
-            }
-        }
-
-        Proposition updatedProposition = propositionService.updateUserProposition(id, username, detail, amount, filePath, removeExistingFile);
+        Proposition updatedProposition = propositionService.updateUserProposition(id, username, detail, amount, file, removeExistingFile);
         return ResponseEntity.ok(updatedProposition);
     }
-
 }
-
