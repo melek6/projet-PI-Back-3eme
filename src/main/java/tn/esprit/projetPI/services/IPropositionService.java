@@ -5,6 +5,8 @@ import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Proposition;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public interface IPropositionService {
@@ -34,4 +36,6 @@ public interface IPropositionService {
     Proposition updateUserProposition(Long id, String username, String detail, double amount, MultipartFile file, boolean removeExistingFile);
 
     String uploadFileToFirebase(MultipartFile file);
+
+    Optional<Proposition> getPropositionById(Long id);
 }

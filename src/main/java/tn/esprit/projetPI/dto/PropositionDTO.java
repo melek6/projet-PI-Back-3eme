@@ -8,7 +8,9 @@ public class PropositionDTO {
     private String date;
     private String status;
     private ProjectDTO project;
-    private UserDTO user; // Add this field
+    private UserDTO user;
+    private String filePath;
+    // Add this field
 
     public static class ProjectDTO {
         private Long id;
@@ -149,4 +151,13 @@ public class PropositionDTO {
     public void setUser(UserDTO user) {
         this.user = user;
     }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
 }

@@ -1,5 +1,13 @@
 package tn.esprit.projetPI.controllers;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.Proposition;
@@ -8,17 +16,11 @@ import tn.esprit.projetPI.repository.ProjectRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.services.FirebaseStorageService;
 import tn.esprit.projetPI.services.IPropositionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+
 @RestController
 @RequestMapping("/api/propositions")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -26,6 +28,9 @@ public class PropositionController {
 
     @Autowired
     private IPropositionService propositionService;
+
+    @Autowired
+    private FirebaseStorageService firebaseStorageService;
 
     @Autowired
     private ProjectRepository projectRepository;
@@ -55,7 +60,12 @@ public class PropositionController {
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
 
-        String filePath = propositionService.uploadFileToFirebase(file);
+        String filePath;
+        try {
+            filePath = firebaseStorageService.uploadFile(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file", e);
+        }
 
         Proposition proposition = new Proposition(detail, amount, "PENDING", project, user, filePath);
         Proposition savedProposition = propositionService.addProposition(proposition);
@@ -117,4 +127,51 @@ public class PropositionController {
         Proposition updatedProposition = propositionService.updateUserProposition(id, username, detail, amount, file, removeExistingFile);
         return ResponseEntity.ok(updatedProposition);
     }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
+        Proposition proposition = propositionService.getPropositionById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposition not found with id: " + id));
+
+        String filePath = proposition.getFilePath();
+        if (filePath == null || filePath.isEmpty()) {
+            throw new RuntimeException("File path is not available for this proposition");
+        }
+
+        ByteArrayResource resource;
+        try {
+            resource = firebaseStorageService.downloadFile(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while downloading file", e);
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + Paths.get(filePath).getFileName().toString() + "\"")
+                .body(resource);
+    }
+
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("filePath") String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            throw new RuntimeException("File path is not available for this proposition");
+        }
+
+        ByteArrayResource resource;
+        try {
+            resource = firebaseStorageService.downloadFile(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while downloading file", e);
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath + "\"")
+                .body(resource);
+    }
+
+
+
+
 }

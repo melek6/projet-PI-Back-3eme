@@ -14,6 +14,7 @@ public class DtoMapper {
         dto.setDetail(proposition.getDetail());
         dto.setAmount(proposition.getAmount());
         dto.setStatus(proposition.getStatus());
+        dto.setFilePath(proposition.getFilePath());
 
         Project project = proposition.getProject();
         if (project != null) {

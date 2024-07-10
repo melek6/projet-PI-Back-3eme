@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -193,6 +194,7 @@ public class PropositionService implements IPropositionService {
         return propositionRepository.save(proposition);
     }
 
+
     @Override
     public String uploadFileToFirebase(MultipartFile file) {
         try {
@@ -200,5 +202,10 @@ public class PropositionService implements IPropositionService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload file to Firebase", e);
         }
+    }
+
+    @Override
+    public Optional<Proposition> getPropositionById(Long id) {
+        return propositionRepository.findById(id);
     }
 }
