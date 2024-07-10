@@ -33,7 +33,7 @@ public class PropositionController {
     @Autowired
     private UserRepository userRepository;
 
-    private static final String UPLOADED_FOLDER = "C:/Users/Iyed/Documents/GitHub/projet-PI-Back-3eme/uploads/";
+    private static final String UPLOADED_FOLDER = "C:/Users/SBS/Desktop/projet-PI-Back-3eme/uploads/";
 
     @GetMapping
     public List<PropositionDTO> getAllPropositions() {
@@ -114,5 +114,31 @@ public class PropositionController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return propositionService.getUsersWithApprovedPropositionsForProjectOwner(username);
     }
+
+    @GetMapping("/user")
+    public List<PropositionDTO> getUserPropositions() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return propositionService.getPropositionsByUser(username);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Void> deleteUserProposition(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        propositionService.deleteUserProposition(id, username);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/user/{id}")
+    public ResponseEntity<Proposition> updateUserProposition(
+            @PathVariable Long id,
+            @RequestParam("detail") String detail,
+            @RequestParam("amount") double amount,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "removeExistingFile", required = false, defaultValue = "false") boolean removeExistingFile) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Proposition updatedProposition = propositionService.updateUserProposition(id, username, detail, amount, file, removeExistingFile);
+        return ResponseEntity.ok(updatedProposition);
+    }
+
 }
 

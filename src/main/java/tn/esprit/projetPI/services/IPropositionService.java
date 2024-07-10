@@ -1,5 +1,6 @@
 package tn.esprit.projetPI.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Proposition;
 
@@ -15,4 +16,11 @@ public interface IPropositionService {
     Proposition declineProposition(Long id);
     List<PropositionDTO.UserDTO> getUsersWithApprovedPropositions();
     List<PropositionDTO.UserDTO> getUsersWithApprovedPropositionsForProjectOwner(String ownerUsername);
+
+  List<PropositionDTO> getPropositionsByUser(String username);
+
+
+    void deleteUserProposition(Long id, String username);
+
+    public Proposition updateUserProposition(Long id, String username, String detail, double amount, MultipartFile file, boolean removeExistingFile);
 }

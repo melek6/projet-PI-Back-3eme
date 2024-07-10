@@ -1,5 +1,7 @@
 package tn.esprit.projetPI.services;
 
+import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.projetPI.controllers.ResourceNotFoundException;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.dto.DtoMapper;
 import tn.esprit.projetPI.models.Proposition;
@@ -10,6 +12,10 @@ import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.repository.PropositionRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -129,5 +135,81 @@ public class PropositionService implements IPropositionService {
         }
 
         return users;
+    }
+
+
+    @Override
+    public List<PropositionDTO> getPropositionsByUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        List<Proposition> propositions = propositionRepository.findByUserId(user.getId());
+        return propositions.stream()
+                .map(DtoMapper::toPropositionDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteUserProposition(Long id, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposition not found with id: " + id));
+        if (!proposition.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not authorized to delete this proposition");
+        }
+        propositionRepository.delete(proposition);
+    }
+    @Override
+    public Proposition updateUserProposition(Long id, String username, String detail, double amount, MultipartFile file, boolean removeExistingFile) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposition not found with id: " + id));
+        if (!proposition.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not authorized to update this proposition");
+        }
+
+        proposition.setDetail(detail);
+        proposition.setAmount(amount);
+
+        if (removeExistingFile && proposition.getFilePath() != null) {
+            // Delete the existing file
+            Path path = Paths.get(proposition.getFilePath());
+            try {
+                Files.deleteIfExists(path);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to delete file", e);
+            }
+            proposition.setFilePath(null);
+        }
+
+        if (file != null && !file.isEmpty()) {
+            String filePath = saveUploadedFile(file);
+            proposition.setFilePath(filePath);
+        }
+
+        return propositionRepository.save(proposition);
+    }
+
+
+    private String saveUploadedFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            return null;
+        }
+
+        try {
+            // Ensure the directory exists
+            Path directory = Paths.get("C:/Users/SBS/Desktop/projet-PI-Back-3eme/uploads/");
+            if (!Files.exists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            byte[] bytes = file.getBytes();
+            Path path = directory.resolve(file.getOriginalFilename());
+            Files.write(path, bytes);
+            return path.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file", e);
+        }
     }
 }
