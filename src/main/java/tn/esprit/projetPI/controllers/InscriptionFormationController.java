@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.projetPI.models.Etat;
 import tn.esprit.projetPI.models.Formation;
 import tn.esprit.projetPI.models.InscriptionFormation;
 import tn.esprit.projetPI.models.User;
@@ -26,21 +27,20 @@ public class InscriptionFormationController {
     private final InscriptionFormationService inscriptionFormationService;
     private final EmailService emailService;
     private final UserRepository userRepository;
+    private final FormationRepository formationRepository;
 
     @Autowired
-    private FormationRepository formationRepository;
-
-    @Autowired
-    public InscriptionFormationController(InscriptionFormationService inscriptionFormationService, EmailService emailService, UserRepository userRepository) {
+    public InscriptionFormationController(InscriptionFormationService inscriptionFormationService, EmailService emailService, UserRepository userRepository, FormationRepository formationRepository) {
         this.inscriptionFormationService = inscriptionFormationService;
         this.emailService = emailService;
         this.userRepository = userRepository;
+        this.formationRepository = formationRepository;
     }
 
     @PostMapping("/hello")
     public ResponseEntity<InscriptionFormation> createinscfor(@RequestBody Map<String, Object> payload) {
         try {
-            String status = (String) payload.get("status");
+            String etatStr = (String) payload.get("etat");
             Integer formationId = (Integer) payload.get("formationId");
 
             if (formationId == null) {
@@ -53,7 +53,8 @@ public class InscriptionFormationController {
             Optional<Formation> optionalFormation = formationRepository.findById(formationId);
             if (optionalFormation.isPresent()) {
                 Formation formation = optionalFormation.get();
-                InscriptionFormation inscriptionFormation = new InscriptionFormation(new Date(), status);
+                Etat etat = Etat.valueOf(etatStr.toUpperCase());  // Convert the string to the enum type
+                InscriptionFormation inscriptionFormation = new InscriptionFormation(new Date(), etat);
                 inscriptionFormation.setFormation(formation);
 
                 // Get the current user
@@ -67,7 +68,7 @@ public class InscriptionFormationController {
 
                 // Send email notification to the current user
                 String subject = "New Inscription Created";
-                String text = "Dear " + user.getUsername() + ",\n\nYour inscription with status: " + status + " for formation: " + formation.getTitle() + " has been created successfully.";
+                String text = "Dear " + user.getUsername() + ",\n\nYour inscription with status: " + etat + " for formation: " + formation.getTitle() + " has been created successfully.";
                 emailService.sendSimpleEmail(user.getEmail(), subject, text);
 
                 return new ResponseEntity<>(saveInscription, HttpStatus.CREATED);
@@ -105,5 +106,14 @@ public class InscriptionFormationController {
     @DeleteMapping("/{id}")
     public void deleteInscription(@PathVariable int id) {
         inscriptionFormationService.deleteInscription(id);
+    }
+
+    @GetMapping("/completed/{userId}")
+    public List<InscriptionFormation> getCompletedFormationsByUser(@PathVariable Long userId) {
+        return inscriptionFormationService.getCompletedFormationsByUser(userId);
+    }
+    @GetMapping("/user/{userId}/etat/{etat}")
+    public List<InscriptionFormation> getInscriptionsByUserAndStatus(@PathVariable Long userId, @PathVariable Etat etat) {
+        return inscriptionFormationService.getInscriptionsByUserAndStatus(userId, etat);
     }
 }

@@ -1,7 +1,5 @@
 package tn.esprit.projetPI.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -19,17 +17,29 @@ public class InscriptionFormation implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date registrationDate;
 
-    @Column(name = "status", length = 255, nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "etat", nullable = false)
+    private Etat etat;
+
+    @ManyToOne
+    @JoinColumn(name = "formation_id", nullable = false)
+    private Formation formation;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public InscriptionFormation() {
         this.registrationDate = new Date();
+        this.etat = Etat.PENDING;
     }
 
-    public InscriptionFormation(Date registrationDate, String status) {
-        this.registrationDate = registrationDate != null ? registrationDate : new Date();  // Set to current date if null
-        this.status = status;
+    public InscriptionFormation(Date registrationDate, Etat etat) {
+        this.registrationDate = registrationDate != null ? registrationDate : new Date();
+        this.etat = etat != null ? etat : Etat.PENDING;
     }
+
+    // Getters and Setters
 
     public int getId() {
         return id;
@@ -47,16 +57,14 @@ public class InscriptionFormation implements Serializable {
         this.registrationDate = registrationDate;
     }
 
-    public String getStatus() {
-        return status;
+    public Etat getEtat() {
+        return etat;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEtat(Etat etat) {
+        this.etat = etat;
     }
-    @ManyToOne
-    @JoinColumn(name = "formation_id",nullable = false)
-    private Formation formation;
+
     public Formation getFormation() {
         return formation;
     }
@@ -64,9 +72,6 @@ public class InscriptionFormation implements Serializable {
     public void setFormation(Formation formation) {
         this.formation = formation;
     }
-    @ManyToOne
-    @JoinColumn(name = "user_id",nullable = false)
-    private User user;
 
     public User getUser() {
         return user;

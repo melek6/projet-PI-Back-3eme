@@ -2,6 +2,7 @@ package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.models.Etat;
 import tn.esprit.projetPI.models.InscriptionFormation;
 import tn.esprit.projetPI.repository.InscriptionFormationRepository;
 
@@ -41,5 +42,15 @@ public class InscriptionFormationServiceImp implements InscriptionFormationServi
     @Override
     public void deleteInscription(int id) {
         inscriptionFormationRepository.deleteById(id);
+    }
+
+    @Override
+    public List<InscriptionFormation> getCompletedFormationsByUser(Long userId) {
+        return inscriptionFormationRepository.findByUserIdAndEtat(userId, Etat.COMPLETED);
+    }
+
+    @Override
+    public List<InscriptionFormation> getInscriptionsByUserAndStatus(Long userId, Etat etat) {
+        return inscriptionFormationRepository.findByUserIdAndEtat(userId, etat);
     }
 }

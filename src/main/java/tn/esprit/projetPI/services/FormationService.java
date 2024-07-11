@@ -28,4 +28,6 @@ public interface FormationService {
     List<Formation> getRecommendedFormations();
 
     List<Formation> getCompletedFormations(Long userId);
+
+    List<Formation> getCompletedFormationsByUser(Long userId);
 }

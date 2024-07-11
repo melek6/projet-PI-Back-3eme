@@ -51,7 +51,10 @@ public class FormationController {
     public Formation createFormation(@RequestBody Formation formation) {
         return formationService.addFormation(formation);
     }
-
+//    @GetMapping("/completed/{userId}")
+//    public List<Formation> getCompletedFormationsByUser(@PathVariable Long userId) {
+//        return formationService.getCompletedFormationsByUser(userId);
+//    }
     @PutMapping("/{id}")
     public Formation updateFormation(@PathVariable int id, @RequestBody Formation formation) {
         formation.setId(id);
