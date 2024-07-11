@@ -2,6 +2,7 @@ package tn.esprit.projetPI.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -20,8 +21,13 @@ public class WsNotificationController {
         System.out.println("Received WSmessage: " + WSmessage.getText());
         return WSmessage;
     }
+    @MessageMapping("/broadcast")
+    public void broadcastMessage(@Payload WSmessage WSmessage) {
+        // Log message to verify it is received
+        System.out.println("Broadcasting WSmessage: " + WSmessage.getText());
 
-    public void sendSpecific(String user, WSmessage WSmessage) {
-        simpMessagingTemplate.convertAndSendToUser(user, "/specific/WSmessage", WSmessage);
+        // Broadcasting the message to all connected users
+        simpMessagingTemplate.convertAndSend("/all/WSmessage", WSmessage);
     }
+
 }
