@@ -10,6 +10,7 @@ public class PropositionDTO {
     private ProjectDTO project;
     private UserDTO user;
     private String filePath;
+    
     // Add this field
 
     public static class ProjectDTO {

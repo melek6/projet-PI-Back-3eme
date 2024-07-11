@@ -2,6 +2,7 @@ package tn.esprit.projetPI.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Proposition;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface PropositionRepository extends JpaRepository<Proposition, Long> 
     List<Proposition> findByStatus(String status);
 
     List<Proposition> findByUserId(Long userId);
+
+
 }

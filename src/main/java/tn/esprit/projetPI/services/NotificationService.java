@@ -2,12 +2,14 @@ package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.dto.NotificationDTO;
 import tn.esprit.projetPI.models.Notification;
 import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.NotificationRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationService implements INotificationService {
@@ -21,8 +23,11 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public List<Notification> getNotificationsByUserId(Long userId) {
-        return notificationRepository.findByUserId(userId);
+    public List<NotificationDTO> getNotificationsByUserId(Long userId) {
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        return notifications.stream()
+                .map(notification -> new NotificationDTO(notification.getId(), notification.getMessage()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -41,5 +46,10 @@ public class NotificationService implements INotificationService {
         notification.setUser(proposition.getProject().getUser());
         notification.setMessage(message.replace("{projectName}", proposition.getProject().getTitle()));
         notificationRepository.save(notification);
+    }
+
+    @Override
+    public void clearNotificationsByUserId(Long userId) {
+        notificationRepository.deleteByUserId(userId);
     }
 }

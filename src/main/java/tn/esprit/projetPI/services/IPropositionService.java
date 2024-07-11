@@ -38,4 +38,6 @@ public interface IPropositionService {
     String uploadFileToFirebase(MultipartFile file);
 
     Optional<Proposition> getPropositionById(Long id);
+
+    List<PropositionDTO> getApprovedPropositions();
 }

@@ -172,6 +172,9 @@ public class PropositionController {
     }
 
 
-
+    @GetMapping("/approved")
+    public List<PropositionDTO> getApprovedPropositions() {
+        return propositionService.getApprovedPropositions();
+    }
 
 }

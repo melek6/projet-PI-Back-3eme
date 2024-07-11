@@ -208,4 +208,12 @@ public class PropositionService implements IPropositionService {
     public Optional<Proposition> getPropositionById(Long id) {
         return propositionRepository.findById(id);
     }
+
+    @Override
+    public List<PropositionDTO> getApprovedPropositions() {
+        List<Proposition> approvedPropositions = propositionRepository.findByStatus("APPROVED");
+        return approvedPropositions.stream()
+                .map(DtoMapper::toPropositionDTO)
+                .collect(Collectors.toList());
+    }
 }
