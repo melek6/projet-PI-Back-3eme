@@ -44,11 +44,17 @@ public class DtoMapper {
         dto.setSkillsRequired(project.getSkillsRequired());
         dto.setDeadline(project.getDeadline());
         dto.setBudget(project.getBudget());
-        dto.setNbPropositions(project.getPropositions().size()); // Set the number of propositions
-        dto.setUser(project.getUser()); // Ensure user is set
+        dto.setNbPropositions(project.getPropositions().size());
+
+        User user = project.getUser();
+        if (user != null) {
+            dto.setUserId(user.getId());
+            dto.setUserEmail(user.getEmail());
+        }
 
         return dto;
     }
+
 
     public static MessageDTO toMessageDTO(Message message) {
         MessageDTO dto = new MessageDTO();
