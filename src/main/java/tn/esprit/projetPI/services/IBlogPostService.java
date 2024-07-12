@@ -11,4 +11,9 @@ public interface IBlogPostService {
     BlogPost createBlogPost(BlogPost blogPost) throws Exception;
     BlogPost updateBlogPost(int id, BlogPost blogPostDetails);
     void deleteBlogPost(int id);
+
+
+    long countComments(int blogPostId);
+    long countLikes(int blogPostId);
+    long countDislikes(int blogPostId);
 }

@@ -94,13 +94,6 @@ public class BlogPost {
         this.reacts = reacts;
     }
 
-    public void validate() throws Exception {
-        if (BadWordUtils.containsBadWord(title) ||
-                BadWordUtils.containsBadWord(content) )
-               {
-            throw new Exception("The offer contains inappropriate language.");
-        }
-    }
 
 
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.models.BlogPost;
 import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.BlogPostRepository;
+import tn.esprit.projetPI.repository.CommentaireRepository;
+import tn.esprit.projetPI.repository.ReactRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
 import java.util.Date;
@@ -21,6 +23,18 @@ public class BlogPostService implements IBlogPostService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CommentaireRepository commentRepository;
+
+
+    @Autowired
+    private BadWordServiceImp badWordService;
+
+    @Autowired
+    private CommentaireRepository commentaireRepository;
+
+    @Autowired
+    private ReactRepository reactRepository;
 
     @Override
     public List<BlogPost> getAllBlogPosts() {
@@ -34,8 +48,11 @@ public class BlogPostService implements IBlogPostService {
 
     @Override
     public BlogPost createBlogPost(BlogPost blogPost) throws Exception {
+        if (badWordService.containsBadWord(blogPost.getContent()) || badWordService.containsBadWord(blogPost.getTitle())) {
+            throw new Exception("Blog post contains inappropriate language.");
+        }
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        blogPost.validate();
+
 
         Long userId;
         if (principal instanceof UserDetailsImpl) {
@@ -71,4 +88,21 @@ public class BlogPostService implements IBlogPostService {
             blogPostRepository.deleteById(id);
         }
     }
+
+    @Override
+    public long countComments(int blogPostId) {
+        return commentRepository.countByBlogPostId(blogPostId);
+    }
+
+
+    @Override
+    public long countLikes(int blogPostId) {
+        return reactRepository.countByBlogPostIdAndReactionType(blogPostId, "like");
+    }
+    @Override
+    public long countDislikes(int blogPostId) {
+        return reactRepository.countByBlogPostIdAndReactionType(blogPostId, "dislik");
+    }
+
+
 }

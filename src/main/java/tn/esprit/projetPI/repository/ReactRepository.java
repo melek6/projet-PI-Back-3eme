@@ -12,8 +12,18 @@ import java.util.Optional;
 
 @Repository
 public interface ReactRepository extends JpaRepository<React, Integer> {
-    long countByBlogPostIdAndType(int blogPostId, String type);
     Optional<React> findByBlogPostAndUser(BlogPost blogPost, User user);
+   // long countByBlogPostIdAndType(int blogPostId, String type);
+
+
+    @Query("SELECT COUNT(r) FROM React r WHERE r.blogPost.id = :blogPostId AND r.type = :reactionType")
+    long countByBlogPostIdAndReactionType(@Param("blogPostId") int blogPostId, @Param("reactionType") String reactionType);
+
+
+
+
+
+    // Si vous utilisez des types distincts pour likes et dislikes, vous pouvez ajouter ces méthodes
         @Query("SELECT r FROM React r WHERE r.blogPost.id = :blogPostId AND r.user.id = :userId")
         Optional<React> findByBlogPostIdAndUserId(@Param("blogPostId") int blogPostId, @Param("userId") Long userId);
     }

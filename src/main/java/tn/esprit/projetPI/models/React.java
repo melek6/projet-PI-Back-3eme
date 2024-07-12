@@ -18,9 +18,8 @@ public class React {
     @Size(min = 0, max = 6)
     private String type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "blog_post_id", nullable = false)
-    @JsonManagedReference(value = "blogpost-react")
     private BlogPost blogPost;
 
     @ManyToOne
