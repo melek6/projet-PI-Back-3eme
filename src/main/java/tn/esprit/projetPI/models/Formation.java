@@ -2,6 +2,7 @@ package tn.esprit.projetPI.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,7 +36,8 @@ public class Formation implements Serializable {
     @Enumerated(EnumType.STRING)
     private FormationCategory category;
 
-    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Evaluation> evaluations;
 
     @ManyToOne(fetch = FetchType.LAZY)

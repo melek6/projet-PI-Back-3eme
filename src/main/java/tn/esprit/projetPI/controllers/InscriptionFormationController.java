@@ -108,7 +108,7 @@ public class InscriptionFormationController {
         inscriptionFormationService.deleteInscription(id);
     }
 
-    @GetMapping("/completed/{userId}")
+    @GetMapping("/user/{userId}/completed")
     public List<InscriptionFormation> getCompletedFormationsByUser(@PathVariable Long userId) {
         return inscriptionFormationService.getCompletedFormationsByUser(userId);
     }
@@ -116,4 +116,5 @@ public class InscriptionFormationController {
     public List<InscriptionFormation> getInscriptionsByUserAndStatus(@PathVariable Long userId, @PathVariable Etat etat) {
         return inscriptionFormationService.getInscriptionsByUserAndStatus(userId, etat);
     }
+
 }

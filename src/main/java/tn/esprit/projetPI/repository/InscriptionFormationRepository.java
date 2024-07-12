@@ -12,4 +12,5 @@ import java.util.List;
 public interface InscriptionFormationRepository extends JpaRepository<InscriptionFormation, Integer> {
     List<InscriptionFormation> findByUserIdAndEtat(Long userId, Etat etat);
     List<InscriptionFormation> findByUserIdAndFormationEndDateBefore(Long userId, Date now);
+
 }

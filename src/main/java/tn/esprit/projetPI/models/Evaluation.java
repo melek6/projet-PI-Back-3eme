@@ -1,5 +1,8 @@
 package tn.esprit.projetPI.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -109,6 +112,7 @@ public class Evaluation implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "formation_id")
+    @JsonBackReference
     private Formation formation;
 
     public Formation getFormation() {
