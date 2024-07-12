@@ -3,6 +3,8 @@ package tn.esprit.projetPI.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.dto.DtoMapper;
+import tn.esprit.projetPI.dto.UserDTO;
 import tn.esprit.projetPI.models.ERole;
 import tn.esprit.projetPI.models.Role;
 import tn.esprit.projetPI.models.User;
@@ -12,6 +14,7 @@ import tn.esprit.projetPI.repository.UserRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserServiceint{
@@ -77,5 +80,12 @@ public class UserService implements UserServiceint{
 
         }
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<UserDTO> getAllUsersDTO() {
+        return userRepository.findAll().stream()
+                .map(DtoMapper::toUserDTO)
+                .collect(Collectors.toList());
     }
 }

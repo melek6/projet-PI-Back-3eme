@@ -1,23 +1,28 @@
 package tn.esprit.projetPI.controllers;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.ProjectRepository;
 import tn.esprit.projetPI.repository.UserRepository;
+import tn.esprit.projetPI.services.FirebaseStorageService;
 import tn.esprit.projetPI.services.IPropositionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.projetPI.services.QRCodeGeneratorService;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/propositions")
@@ -28,12 +33,15 @@ public class PropositionController {
     private IPropositionService propositionService;
 
     @Autowired
+    private FirebaseStorageService firebaseStorageService;
+
+    @Autowired
     private ProjectRepository projectRepository;
 
     @Autowired
     private UserRepository userRepository;
 
-    private static final String UPLOADED_FOLDER = "C:/Users/Iyed/Documents/GitHub/projet-PI-Back-3eme/uploads/";
+
 
     @GetMapping
     public List<PropositionDTO> getAllPropositions() {
@@ -57,39 +65,32 @@ public class PropositionController {
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
 
-        String filePath = saveUploadedFile(file);
+        String filePath;
+        try {
+            filePath = firebaseStorageService.uploadFile(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file", e);
+        }
 
         Proposition proposition = new Proposition(detail, amount, "PENDING", project, user, filePath);
         Proposition savedProposition = propositionService.addProposition(proposition);
         return ResponseEntity.ok(savedProposition);
     }
 
-    private String saveUploadedFile(MultipartFile file) {
-        if (file.isEmpty()) {
-            return null;
-        }
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<Proposition> updateProposition(
+            @PathVariable Long id,
+            @RequestParam("detail") String detail,
+            @RequestParam("amount") double amount,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "removeExistingFile", required = false, defaultValue = "false") boolean removeExistingFile) {
 
-        try {
-            // Ensure the directory exists
-            Path directory = Paths.get(UPLOADED_FOLDER);
-            if (!Files.exists(directory)) {
-                Files.createDirectories(directory);
-            }
-
-            byte[] bytes = file.getBytes();
-            Path path = directory.resolve(file.getOriginalFilename());
-            Files.write(path, bytes);
-            return path.toString();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to store file", e);
-        }
-    }
-
-    @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Proposition> updateProposition(@PathVariable Long id, @RequestBody Proposition propositionDetails) {
-        Proposition updatedProposition = propositionService.updateProposition(id, propositionDetails);
+        Proposition updatedProposition = propositionService.updateProposition(id, detail, amount, file, removeExistingFile);
         return ResponseEntity.ok(updatedProposition);
     }
+
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProposition(@PathVariable Long id) {
@@ -114,5 +115,86 @@ public class PropositionController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return propositionService.getUsersWithApprovedPropositionsForProjectOwner(username);
     }
-}
 
+    @GetMapping("/user")
+    public List<PropositionDTO> getUserPropositions() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return propositionService.getPropositionsByUser(username);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Void> deleteUserProposition(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        propositionService.deleteUserProposition(id, username);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/user/{id}")
+    public ResponseEntity<Proposition> updateUserProposition(
+            @PathVariable Long id,
+            @RequestParam("detail") String detail,
+            @RequestParam("amount") double amount,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "removeExistingFile", required = false, defaultValue = "false") boolean removeExistingFile) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Proposition updatedProposition = propositionService.updateUserProposition(id, username, detail, amount, file, removeExistingFile);
+        return ResponseEntity.ok(updatedProposition);
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
+        Proposition proposition = propositionService.getPropositionById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposition not found with id: " + id));
+
+        String filePath = proposition.getFilePath();
+        if (filePath == null || filePath.isEmpty()) {
+            throw new RuntimeException("File path is not available for this proposition");
+        }
+
+        ByteArrayResource resource;
+        try {
+            resource = firebaseStorageService.downloadFile(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while downloading file", e);
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + Paths.get(filePath).getFileName().toString() + "\"")
+                .body(resource);
+    }
+
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("filePath") String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            throw new RuntimeException("File path is not available for this proposition");
+        }
+
+        ByteArrayResource resource;
+        try {
+            resource = firebaseStorageService.downloadFile(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while downloading file", e);
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath + "\"")
+                .body(resource);
+    }
+
+
+    @GetMapping("/approved")
+    public List<PropositionDTO> getApprovedPropositions() {
+        return propositionService.getApprovedPropositions();
+    }
+
+    @DeleteMapping("/{id}/file")
+    public ResponseEntity<Void> deletePropositionFile(@PathVariable Long id) {
+        propositionService.deleteFileFromProposition(id);
+        return ResponseEntity.noContent().build();
+    }
+
+}

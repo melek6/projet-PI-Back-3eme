@@ -12,7 +12,8 @@ public class ProjectDTO {
     private LocalDate deadline;
     private double budget;
     private int nbPropositions;
-    private User user;
+    private Long userId;
+    private String userEmail;
 
     // Getters and setters
     public Long getId() {
@@ -79,15 +80,19 @@ public class ProjectDTO {
         this.nbPropositions = nbPropositions;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUserEmail() {
-        return user != null ? user.getEmail() : null;
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

@@ -1,7 +1,7 @@
 package tn.esprit.projetPI.dto;
 
 import org.springframework.stereotype.Component;
-import tn.esprit.projetPI.models.ChatMessage;
+import tn.esprit.projetPI.models.Message;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.User;
@@ -9,28 +9,13 @@ import tn.esprit.projetPI.models.User;
 @Component
 public class DtoMapper {
 
-    public ChatMessageDTO toChatMessageDTO(ChatMessage chatMessage) {
-        ChatMessageDTO dto = new ChatMessageDTO();
-        dto.setId(chatMessage.getId());
-        dto.setSenderId(chatMessage.getSender().getId());
-        dto.setRecipientId(chatMessage.getRecipient().getId());
-        dto.setContent(chatMessage.getContent());
-        return dto;
-    }
-
-    public ChatMessage toChatMessage(ChatMessageDTO chatMessageDTO) {
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setContent(chatMessageDTO.getContent());
-        // Sender, Recipient, and Project will be set in the service
-        return chatMessage;
-    }
-
     public static PropositionDTO toPropositionDTO(Proposition proposition) {
         PropositionDTO dto = new PropositionDTO();
         dto.setId(proposition.getId());
         dto.setDetail(proposition.getDetail());
         dto.setAmount(proposition.getAmount());
         dto.setStatus(proposition.getStatus());
+        dto.setFilePath(proposition.getFilePath());
 
         Project project = proposition.getProject();
         if (project != null) {
@@ -59,9 +44,42 @@ public class DtoMapper {
         dto.setSkillsRequired(project.getSkillsRequired());
         dto.setDeadline(project.getDeadline());
         dto.setBudget(project.getBudget());
-        dto.setNbPropositions(project.getPropositions().size()); // Set the number of propositions
-        dto.setUser(project.getUser()); // Ensure user is set
+        dto.setNbPropositions(project.getPropositions().size());
+
+        User user = project.getUser();
+        if (user != null) {
+            dto.setUserId(user.getId());
+            dto.setUserEmail(user.getEmail());
+        }
 
         return dto;
     }
+
+
+    public static MessageDTO toMessageDTO(Message message) {
+        MessageDTO dto = new MessageDTO();
+        dto.setId(message.getId());
+        dto.setText(message.getText());
+        dto.setSendTime(message.getSendTime());
+
+        User userFrom = message.getUserFrom();
+        if (userFrom != null) {
+            dto.setUserFromId(userFrom.getId());
+            dto.setUserFromUsername(userFrom.getUsername());
+        }
+
+        User userTo = message.getUserTo();
+        if (userTo != null) {
+            dto.setUserToId(userTo.getId());
+            dto.setUserToUsername(userTo.getUsername());
+        }
+
+        return dto;
+    }
+
+    public static UserDTO toUserDTO(User user) {
+        return new UserDTO(user.getId(), user.getUsername());
+    }
+
+
 }

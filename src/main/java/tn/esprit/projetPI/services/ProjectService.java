@@ -94,14 +94,15 @@ public class ProjectService implements IProjectService {
 
     @Scheduled(cron = "0 0 9 * * ?") // Run daily at 9 AM
     public void sendDeadlineReminders() {
-        List<ProjectDTO> projects = retrieveAllProjects();
+        List<Project> projects = projectRepository.findAll();
         LocalDate now = LocalDate.now();
 
-        for (ProjectDTO project : projects) {
+        for (Project project : projects) {
             if (project.getDeadline() != null && project.getDeadline().isAfter(now) && project.getDeadline().isBefore(now.plusWeeks(1))) {
                 String userEmail = project.getUser().getEmail();
                 if (userEmail != null) {
-                    emailService.sendDeadlineReminderEmail(userEmail, project);
+                    ProjectDTO projectDTO = DtoMapper.toProjectDTO(project);
+                    emailService.sendDeadlineReminderEmail(userEmail, projectDTO);
                 }
             }
         }

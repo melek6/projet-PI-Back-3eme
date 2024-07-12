@@ -1,5 +1,8 @@
 package tn.esprit.projetPI.services;
 
+
+import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.projetPI.controllers.ResourceNotFoundException;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.dto.DtoMapper;
 import tn.esprit.projetPI.models.Proposition;
@@ -10,8 +13,12 @@ import org.springframework.stereotype.Service;
 import tn.esprit.projetPI.repository.PropositionRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +35,9 @@ public class PropositionService implements IPropositionService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FirebaseStorageService firebaseStorageService;
 
     @Override
     public List<PropositionDTO> retrieveAllPropositions() {
@@ -56,15 +66,30 @@ public class PropositionService implements IPropositionService {
     }
 
     @Override
-    public Proposition updateProposition(Long id, Proposition propositionDetails) {
-        Proposition existingProposition = propositionRepository.findById(id)
+    public Proposition updateProposition(Long id, String detail, double amount, MultipartFile file, boolean removeExistingFile) {
+        Proposition proposition = propositionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proposition not found"));
 
-        existingProposition.setDetail(propositionDetails.getDetail());
-        existingProposition.setAmount(propositionDetails.getAmount());
-        existingProposition.setStatus(propositionDetails.getStatus());
+        proposition.setDetail(detail);
+        proposition.setAmount(amount);
 
-        return propositionRepository.save(existingProposition);
+        if (file != null && !file.isEmpty()) {
+            // Delete the existing file if requested
+            if (removeExistingFile && proposition.getFilePath() != null) {
+                firebaseStorageService.deleteFile(proposition.getFilePath());
+                proposition.setFilePath(null);
+            }
+
+            // Upload the new file
+            try {
+                String filePath = firebaseStorageService.uploadFile(file);
+                proposition.setFilePath(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Error uploading file to Firebase", e);
+            }
+        }
+
+        return propositionRepository.save(proposition);
     }
 
     @Override
@@ -130,4 +155,95 @@ public class PropositionService implements IPropositionService {
 
         return users;
     }
+
+    @Override
+    public List<PropositionDTO> getPropositionsByUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        List<Proposition> propositions = propositionRepository.findByUserId(user.getId());
+        return propositions.stream()
+                .map(DtoMapper::toPropositionDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteUserProposition(Long id, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposition not found with id: " + id));
+        if (!proposition.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not authorized to delete this proposition");
+        }
+        propositionRepository.delete(proposition);
+    }
+
+    @Override
+    public Proposition updateUserProposition(Long id, String username, String detail, double amount, MultipartFile file, boolean removeExistingFile) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposition not found with id: " + id));
+        if (!proposition.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not authorized to update this proposition");
+        }
+
+        proposition.setDetail(detail);
+        proposition.setAmount(amount);
+
+        try {
+            if (removeExistingFile && proposition.getFilePath() != null) {
+                // Delete the existing file
+                firebaseStorageService.deleteFile(proposition.getFilePath());
+                proposition.setFilePath(null);
+            }
+
+            if (file != null && !file.isEmpty()) {
+                String filePath = firebaseStorageService.uploadFile(file);
+                proposition.setFilePath(filePath);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to handle file operations", e);
+        }
+
+        return propositionRepository.save(proposition);
+    }
+
+
+    @Override
+    public String uploadFileToFirebase(MultipartFile file) {
+        try {
+            return firebaseStorageService.uploadFile(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file to Firebase", e);
+        }
+    }
+
+    @Override
+    public Optional<Proposition> getPropositionById(Long id) {
+        return propositionRepository.findById(id);
+    }
+
+    @Override
+    public List<PropositionDTO> getApprovedPropositions() {
+        List<Proposition> approvedPropositions = propositionRepository.findByStatus("APPROVED");
+        return approvedPropositions.stream()
+                .map(DtoMapper::toPropositionDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteFileFromProposition(Long id) {
+        Proposition proposition = propositionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposition not found with id: " + id));
+
+        if (proposition.getFilePath() != null) {
+            firebaseStorageService.deleteFile(proposition.getFilePath());
+            proposition.setFilePath(null);
+            propositionRepository.save(proposition);
+        } else {
+            throw new RuntimeException("No file associated with this proposition");
+        }
+    }
+
 }
