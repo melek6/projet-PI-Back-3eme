@@ -1,29 +1,12 @@
 package tn.esprit.projetPI.dto;
 
 import org.springframework.stereotype.Component;
-import tn.esprit.projetPI.models.ChatMessage;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.User;
 
 @Component
 public class DtoMapper {
-
-    public ChatMessageDTO toChatMessageDTO(ChatMessage chatMessage) {
-        ChatMessageDTO dto = new ChatMessageDTO();
-        dto.setId(chatMessage.getId());
-        dto.setSenderId(chatMessage.getSender().getId());
-        dto.setRecipientId(chatMessage.getRecipient().getId());
-        dto.setContent(chatMessage.getContent());
-        return dto;
-    }
-
-    public ChatMessage toChatMessage(ChatMessageDTO chatMessageDTO) {
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setContent(chatMessageDTO.getContent());
-        // Sender, Recipient, and Project will be set in the service
-        return chatMessage;
-    }
 
     public static PropositionDTO toPropositionDTO(Proposition proposition) {
         PropositionDTO dto = new PropositionDTO();
