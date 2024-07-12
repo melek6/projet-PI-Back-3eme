@@ -8,4 +8,8 @@ public interface OffreService {
     Offre getOffreById(int id);
     List<Offre> getOffreByIduser(int id);
     List<Offre> getAllOffres();
+
+    // Ajoutez ces deux méthodes
+    List<Offre> getDailyOffers();
+    List<Offre> getWeeklyOffers();
 }

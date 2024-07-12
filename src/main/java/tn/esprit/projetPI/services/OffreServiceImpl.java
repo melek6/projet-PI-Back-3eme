@@ -78,4 +78,15 @@ public class OffreServiceImpl implements OffreService{
     public List<Offre> getAllOffres() {
         return offreRepository.findAll();
     }
+
+    @Override
+    public List<Offre> getDailyOffers() {
+        return offreRepository.findDailyOffers();
+    }
+
+    @Override
+    public List<Offre> getWeeklyOffers() {
+        return offreRepository.findWeeklyOffers();
+    }
+
 }
