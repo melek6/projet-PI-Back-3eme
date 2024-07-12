@@ -6,6 +6,7 @@ import tn.esprit.projetPI.models.Proposition;
 import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.ProjectRepository;
 import tn.esprit.projetPI.repository.UserRepository;
+import tn.esprit.projetPI.services.FirebaseStorageService;
 import tn.esprit.projetPI.services.IPropositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class PropositionController {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private FirebaseStorageService firebaseStorageService;
 
     @Autowired
     private UserRepository userRepository;
@@ -57,12 +61,20 @@ public class PropositionController {
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
 
-        String filePath = saveUploadedFile(file);
+        String filePath = null;
+        if (file != null && !file.isEmpty()) {
+            try {
+                filePath = firebaseStorageService.uploadFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload file", e);
+            }
+        }
 
         Proposition proposition = new Proposition(detail, amount, "PENDING", project, user, filePath);
         Proposition savedProposition = propositionService.addProposition(proposition);
         return ResponseEntity.ok(savedProposition);
     }
+
 
     private String saveUploadedFile(MultipartFile file) {
         if (file.isEmpty()) {
@@ -127,6 +139,7 @@ public class PropositionController {
         propositionService.deleteUserProposition(id, username);
         return ResponseEntity.noContent().build();
     }
+
     @PutMapping("/user/{id}")
     public ResponseEntity<Proposition> updateUserProposition(
             @PathVariable Long id,
@@ -136,7 +149,17 @@ public class PropositionController {
             @RequestParam(value = "removeExistingFile", required = false, defaultValue = "false") boolean removeExistingFile) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Proposition updatedProposition = propositionService.updateUserProposition(id, username, detail, amount, file, removeExistingFile);
+
+        String filePath = null;
+        if (file != null && !file.isEmpty()) {
+            try {
+                filePath = firebaseStorageService.uploadFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload file", e);
+            }
+        }
+
+        Proposition updatedProposition = propositionService.updateUserProposition(id, username, detail, amount, filePath, removeExistingFile);
         return ResponseEntity.ok(updatedProposition);
     }
 
