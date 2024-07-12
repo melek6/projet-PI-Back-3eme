@@ -2,11 +2,11 @@ package tn.esprit.projetPI.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tn.esprit.projetPI.models.Question;
-import tn.esprit.projetPI.models.Quiz;
-import tn.esprit.projetPI.models.Reponse;
+import tn.esprit.projetPI.models.*;
 import tn.esprit.projetPI.repository.QuestionRepository;
 import tn.esprit.projetPI.repository.QuizRepository;
+import tn.esprit.projetPI.repository.TentativeRepository;
+import tn.esprit.projetPI.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +19,14 @@ public class QuestionImpl {
 
     @Autowired
     private QuizRepository quizRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EmailService  emailService;
+    @Autowired
+    private TentativeRepository tentativeRepository;
 
     public Question saveOrUpdateQuestion(Question question, Long quizId) {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
@@ -46,12 +54,26 @@ public class QuestionImpl {
         });
     }
 
-  /*  public List<String> getReponseContentByQuestionId(Long questionId) {
+   public List<String> getReponseContentByQuestionId(Long questionId) {
         return questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("Question not found"))
                 .getReponses()
                 .stream()
                 .map(Reponse::getContent)
                 .collect(Collectors.toList());
-    }*/
+    }
+
+    public  void sendMailValidation(Long idUser, Long score,Long quizId){
+        User user = userRepository.findById(idUser).orElse(null);
+        Quiz quiz = quizRepository.findById(quizId).orElse(null);
+        if(user != null) {
+            emailService.sendSimpleEmail(user.getEmail(),
+                    "Votre score est:" + score,"" );
+            Tentative tentative = new Tentative();
+            tentative.setQuizId(quizId);
+            tentative.setUserId(idUser);
+           tentative.setScore(score);
+            tentativeRepository.save(tentative);
+        }
+    }
 }

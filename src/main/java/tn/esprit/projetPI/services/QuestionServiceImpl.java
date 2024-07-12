@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.projetPI.models.Question;
 import tn.esprit.projetPI.models.Quiz;
+import tn.esprit.projetPI.models.Tentative;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,8 @@ import java.util.Optional;
 public class QuestionServiceImpl {
     @Autowired
     private QuestionImpl questionService;
+    @Autowired
+    private TentativeService tentativeService;
 
     @PostMapping
     public ResponseEntity<Question> createOrUpdateQuestion(@RequestBody Question question, @RequestParam Long quizId) {
@@ -57,8 +60,19 @@ public class QuestionServiceImpl {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
- /*   @GetMapping("/{id}/responses")
+   @GetMapping("/{id}/responses")
     public List<String> getReponsesByQuestionId(@PathVariable Long id) {
         return questionService.getReponseContentByQuestionId(id);
-    }*/
+    }
+
+    @PostMapping("/sendMail/{id}/{score}/{quizId}")
+    public ResponseEntity<Void> sendEmailValidation(@PathVariable Long id,@PathVariable Long score,@PathVariable Long quizId){
+        questionService.sendMailValidation(id,score,quizId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/tentative/{idUser}/{idQuiz}")
+    public List<Tentative> getAttemptedAttetative(@PathVariable Long idUser, @PathVariable Long idQuiz ) {
+        return tentativeService.hasUserAttemptedQuiz(idUser,idQuiz);
+    }
 }

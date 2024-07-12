@@ -6,4 +6,6 @@ import tn.esprit.projetPI.models.Question;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
+
+
 }

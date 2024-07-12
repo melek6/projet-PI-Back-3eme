@@ -15,8 +15,8 @@ public class Quiz {
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<Question> questions; // List of questions associated with the Quiz
 
-    @OneToOne(mappedBy = "quiz")
-    private Tentative tentative; // Tentative associated with the Quiz
+   // @OneToOne(mappedBy = "quiz")
+   // private Tentative tentative; // Tentative associated with the Quiz
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -62,13 +62,13 @@ public class Quiz {
         this.questions = questions;
     }
 
-    public Tentative getTentative() {
+   /* public Tentative getTentative() {
         return tentative;
     }
 
     public void setTentative(Tentative tentative) {
         this.tentative = tentative;
-    }
+    } */
 
     public User getUser() {
         return user;
