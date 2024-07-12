@@ -1,5 +1,7 @@
 package tn.esprit.projetPI.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -14,7 +16,7 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-
+@JsonIgnore
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Reponse> reponses;
 
@@ -51,9 +53,9 @@ public class Question {
         this.quiz = quiz;
     }
 
-  /* public List<Reponse> getReponses() {
+   public List<Reponse> getReponses() {
         return reponses;
-    }*/
+    }
 
     public void setReponses(List<Reponse> reponses) {
         this.reponses = reponses;
