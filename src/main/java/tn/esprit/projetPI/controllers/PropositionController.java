@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,8 @@ import tn.esprit.projetPI.repository.ProjectRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.services.FirebaseStorageService;
 import tn.esprit.projetPI.services.IPropositionService;
+import tn.esprit.projetPI.services.QRCodeGeneratorService;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -37,6 +40,8 @@ public class PropositionController {
 
     @Autowired
     private UserRepository userRepository;
+
+
 
     @GetMapping
     public List<PropositionDTO> getAllPropositions() {
@@ -176,5 +181,6 @@ public class PropositionController {
     public List<PropositionDTO> getApprovedPropositions() {
         return propositionService.getApprovedPropositions();
     }
+
 
 }

@@ -45,4 +45,15 @@ public class FirebaseStorageService {
         return new ByteArrayResource(content);
     }
 
+    public String getFileDownloadUrl(String filePath) {
+        try {
+            Blob blob = storage.get(BlobId.of(bucketName, filePath));
+            if (blob == null) {
+                throw new RuntimeException("File not found in Firebase storage");
+            }
+            return blob.getMediaLink();
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating file download URL", e);
+        }
+    }
 }
