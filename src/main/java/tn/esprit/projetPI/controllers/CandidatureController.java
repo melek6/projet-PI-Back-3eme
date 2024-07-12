@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.models.Candidature;
 import tn.esprit.projetPI.models.Offre;
+import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.OffreRepository;
+import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.services.CandidatureService;
+import tn.esprit.projetPI.services.EmailService;
 
 import java.io.IOException;
 import java.util.Date;
@@ -25,6 +28,10 @@ public class CandidatureController {
 
     @Autowired
     private OffreRepository offreRepository;
+    @Autowired
+    private EmailService emailService;
+
+
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Candidature> createCandidature(
@@ -45,6 +52,7 @@ public class CandidatureController {
                 Candidature candidature = new Candidature(new Date(), nom, mail, cv.getBytes());
                 candidature.setOffre(offre);
                 Candidature savedCandidature = candidatureService.saveCandidature(candidature);
+                emailService.sendSimpleEmail(mail,"Votre candidature pour le poste de " + candidature.getOffre().getTitle() + " a été enregistrée avec succès.","Votre candidature a été enregistrée avec succès");
                 return ResponseEntity.ok(savedCandidature);
             } else {
                 return ResponseEntity.notFound().build();
@@ -53,6 +61,7 @@ public class CandidatureController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
     }
 
 
