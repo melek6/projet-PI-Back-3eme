@@ -262,6 +262,22 @@ public class BlogPostController {
             return ResponseEntity.status(500).body("Error while communicating with Hugging Face API: " + errorMessage);
         }
     }
+    @GetMapping("/{blogPostId}/comments/counts")
+    public ResponseEntity<Long> countComments(@PathVariable int blogPostId) {
+        long count = blogPostService.countComments(blogPostId);
+        return ResponseEntity.ok(count);
+    }
 
+    @GetMapping("/{blogPostId}/likes/counts")
+    public ResponseEntity<Long> countLikes(@PathVariable int blogPostId) {
+        long count = blogPostService.countLikes(blogPostId);
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/{blogPostId}/dislikes/counts")
+    public ResponseEntity<Long> countDislikes(@PathVariable int blogPostId) {
+        long count = blogPostService.countDislikes(blogPostId);
+        return ResponseEntity.ok(count);
+    }
 
 }
