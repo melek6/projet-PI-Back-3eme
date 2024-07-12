@@ -124,19 +124,29 @@ public class BlogPostController {
 
     @PostMapping("/{blogPostId}/reacts")
     public ResponseEntity<React> addReactToBlogPost(@PathVariable int blogPostId, @RequestBody React react) {
-        if (react.getType() == null || react.getType().length() > 6) {
-            return ResponseEntity.badRequest().body(null);
-        }
+        // Vérifie si une réaction similaire existe déjà pour l'utilisateur
+        Optional<React> existingReact = reactRepository.findByBlogPostIdAndUserId(blogPostId, getUserId());
 
-        Optional<BlogPost> blogPost = blogPostService.getBlogPostById(blogPostId);
-        if (blogPost.isPresent()) {
-            react.setBlogPost(blogPost.get());
+        if (existingReact.isPresent()) {
+            React currentReact = existingReact.get();
+            if (!currentReact.getType().equals(react.getType())) {
+                currentReact.setType(react.getType());
+                reactService.updateReact(currentReact.getId(), currentReact);
+            }
+            return ResponseEntity.ok(currentReact);
+        } else {
+            react.setBlogPost(blogPostService.getBlogPostById(blogPostId).orElse(null));
+            react.setUser(userRepository.findById(getUserId()).orElse(null));
             React savedReact = reactService.createReact(react);
             return ResponseEntity.ok(savedReact);
-        } else {
-            return ResponseEntity.notFound().build();
         }
     }
+
+    private Long getUserId() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getId();
+    }
+
 
 
     @GetMapping("/{blogPostId}/likes")
@@ -252,4 +262,6 @@ public class BlogPostController {
             return ResponseEntity.status(500).body("Error while communicating with Hugging Face API: " + errorMessage);
         }
     }
+
+
 }

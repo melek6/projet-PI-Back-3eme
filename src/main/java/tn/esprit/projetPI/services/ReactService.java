@@ -54,10 +54,15 @@ public class ReactService implements IReactService {
         Optional<React> react = reactRepository.findById(id);
         if (react.isPresent()) {
             React updatedReact = react.get();
-            updatedReact.setType(reactDetails.getType());
-            return reactRepository.save(updatedReact);
+            updatedReact.setType(reactDetails.getType()); // Met à jour le type de réaction
+            try {
+                return reactRepository.save(updatedReact); // Sauvegarde la réaction mise à jour
+            } catch (Exception e) {
+                // Gérer l'exception (par exemple, journalisation, remontée, etc.)
+                throw new RuntimeException("Failed to update react with id: " + id, e);
+            }
         } else {
-            return null;
+            return null; // Retourne null si aucune réaction avec cet ID n'est trouvée
         }
     }
 
@@ -70,16 +75,31 @@ public class ReactService implements IReactService {
 
     @Override
     public long countLikes(int blogPostId) {
-        return reactRepository.countByBlogPostIdAndType(blogPostId, "like");
+        return 0;
     }
 
     @Override
     public long countDislikes(int blogPostId) {
-        return reactRepository.countByBlogPostIdAndType(blogPostId, "dislike");
+        return 0;
     }
 
     @Override
     public Optional<React> findByBlogPostAndUser(BlogPost blogPost, User user) {
-        return reactRepository.findByBlogPostAndUser(blogPost, user);
+        return Optional.empty();
     }
+
+//    @Override
+//    public long countLikes(int blogPostId) {
+//        return reactRepository.countByBlogPostIdAndType(blogPostId, "like");
+//    }
+//
+//    @Override
+//    public long countDislikes(int blogPostId) {
+//        return reactRepository.countByBlogPostIdAndType(blogPostId, "dislik");
+//    }
+//
+//    @Override
+//    public Optional<React> findByBlogPostAndUser(BlogPost blogPost, User user) {
+//        return reactRepository.findByBlogPostAndUser(blogPost, user);
+//    }
 }
