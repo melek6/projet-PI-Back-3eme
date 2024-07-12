@@ -1,7 +1,11 @@
 package tn.esprit.projetPI.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "evaluations")
@@ -18,13 +22,27 @@ public class Evaluation implements Serializable {
     @Column(nullable = true) // allows null values in the database
     private Integer score; // Use Integer instead of int
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_date")
+    private Date createDate;
+
+    private String location;
+    private String participant;
+    private String trainer;
+    private String trainingTitle;
+
     // Default constructor
     public Evaluation() {}
 
     // Parameterized constructor
-    public Evaluation(String comments, Integer score) {
+    public Evaluation(String comments, Integer score, Date createDate, String location, String participant, String trainer, String trainingTitle) {
         this.comments = comments;
         this.score = score;
+        this.createDate = createDate;
+        this.location = location;
+        this.participant = participant;
+        this.trainer = trainer;
+        this.trainingTitle = trainingTitle;
     }
 
     // Getters and setters
@@ -52,8 +70,49 @@ public class Evaluation implements Serializable {
         this.score = score;
     }
 
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getParticipant() {
+        return participant;
+    }
+
+    public void setParticipant(String participant) {
+        this.participant = participant;
+    }
+
+    public String getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(String trainer) {
+        this.trainer = trainer;
+    }
+
+    public String getTrainingTitle() {
+        return trainingTitle;
+    }
+
+    public void setTrainingTitle(String trainingTitle) {
+        this.trainingTitle = trainingTitle;
+    }
+
     @ManyToOne
     @JoinColumn(name = "formation_id")
+    @JsonBackReference
     private Formation formation;
 
     public Formation getFormation() {

@@ -2,6 +2,7 @@ package tn.esprit.projetPI.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,12 +21,14 @@ public class Formation implements Serializable {
     private String title;
     private boolean bestSeller;
     private String description;
+    private String trainer;
     @Temporal(TemporalType.DATE)
     private Date startDate;
     @Temporal(TemporalType.DATE)
     private Date endDate;
     private String location;
     private String planning;
+
     @Column(name = "price", nullable = false)
     private double price;
     @Column(name = "number_of_hours", nullable = false)
@@ -33,7 +36,8 @@ public class Formation implements Serializable {
     @Enumerated(EnumType.STRING)
     private FormationCategory category;
 
-    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Evaluation> evaluations;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,7 +52,7 @@ public class Formation implements Serializable {
     public Formation() {
     }
 
-    public Formation(String title, String description, String planning, Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user, boolean bestSeller) {
+    public Formation(String title, String description,String trainer, String planning, Date startDate, Date endDate, String location, double price, int numberOfHours, FormationCategory category, User user, boolean bestSeller) {
         this.title = title;
         this.description = description;
         this.startDate = startDate;
@@ -60,6 +64,7 @@ public class Formation implements Serializable {
         this.user = user;
         this.bestSeller = bestSeller;
         this.planning = planning;
+        this.trainer = trainer;
     }
 
     // Getters and Setters
@@ -158,6 +163,13 @@ public class Formation implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+    public String getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(String trainer) {
+        this.trainer = trainer;
     }
 
     public boolean isBestSeller() {

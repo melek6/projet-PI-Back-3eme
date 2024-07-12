@@ -9,35 +9,33 @@ import tn.esprit.projetPI.controllers.ResourceNotFoundException;
 import tn.esprit.projetPI.models.Evaluation;
 import tn.esprit.projetPI.models.Formation;
 import tn.esprit.projetPI.models.FormationCategory;
+import tn.esprit.projetPI.models.InscriptionFormation;
 import tn.esprit.projetPI.repository.EvaluationRepository;
 import tn.esprit.projetPI.repository.FormationRepository;
+import tn.esprit.projetPI.repository.InscriptionFormationRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FormationServiceImp implements FormationService {
-@Autowired
-    private  FormationRepository formationRepository;
-@Autowired
-    private  EvaluationRepository evaluationRepository;
-
+    @Autowired
+    private FormationRepository formationRepository;
+    @Autowired
+    private EvaluationRepository evaluationRepository;
     @Value("${file.upload-dir}")
     private String uploadDir;
-
     @Autowired
     private UserRepository userRepository;
-
-//    @Autowired
-//    public FormationServiceImp(FormationRepository formationRepository, EvaluationRepository evaluationRepository) {
-//        this.formationRepository = formationRepository;
-//        this.evaluationRepository = evaluationRepository;
-//    }
+    @Autowired
+    private InscriptionFormationRepository inscriptionFormationRepository;
 
     @Override
     public List<Formation> retrieveAllFormations() {
@@ -108,11 +106,19 @@ public class FormationServiceImp implements FormationService {
         return formationRepository.findByBestSeller(true);
     }
 
-
+    public List<Formation> getCompletedFormations(Long userId) {
+        return formationRepository.findCompletedFormationsByUserId(userId);
+    }
 
     @Override
     public List<Formation> getFormationsByCategory(FormationCategory category) {
         return formationRepository.findByCategory(category);
+    }
+
+    public List<Formation> getCompletedFormationsByUser(Long userId) {
+        Date now = new Date();
+        List<InscriptionFormation> inscriptions = inscriptionFormationRepository.findByUserIdAndFormationEndDateBefore(userId, now);
+        return inscriptions.stream().map(InscriptionFormation::getFormation).collect(Collectors.toList());
     }
 
     @Override
@@ -142,5 +148,10 @@ public class FormationServiceImp implements FormationService {
         } catch (IOException e) {
             throw new RuntimeException("Erreur lors du téléchargement du fichier", e);
         }
+    }
+
+    @Override
+    public List<Formation> getRecommendedFormations() {
+        return formationRepository.findTopFormationsByAverageScore().subList(0, 5);  // Récupère les 5 meilleures formations
     }
 }

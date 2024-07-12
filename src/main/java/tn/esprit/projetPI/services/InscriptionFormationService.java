@@ -1,5 +1,6 @@
 package tn.esprit.projetPI.services;
 
+import tn.esprit.projetPI.models.Etat;
 import tn.esprit.projetPI.models.InscriptionFormation;
 
 import java.util.List;
@@ -11,4 +12,8 @@ public interface InscriptionFormationService {
     InscriptionFormation updateInscription(InscriptionFormation inscriptionFormation);
     Optional<InscriptionFormation> retrieveInscription(int id);
     void deleteInscription(int id);
+
+    List<InscriptionFormation> getCompletedFormationsByUser(Long userId);
+
+    List<InscriptionFormation> getInscriptionsByUserAndStatus(Long userId, Etat etat);
 }

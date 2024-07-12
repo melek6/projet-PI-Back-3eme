@@ -44,12 +44,17 @@ public class FormationController {
     public Formation getFormationById(@PathVariable int id) {
         return formationService.retrieveFormation(id).orElse(null);
     }
-
+    @GetMapping("/recommended")
+    public List<Formation> getRecommendedFormations() {
+        return formationService.getRecommendedFormations();  }
     @PostMapping
     public Formation createFormation(@RequestBody Formation formation) {
         return formationService.addFormation(formation);
     }
-
+//    @GetMapping("/completed/{userId}")
+//    public List<Formation> getCompletedFormationsByUser(@PathVariable Long userId) {
+//        return formationService.getCompletedFormationsByUser(userId);
+//    }
     @PutMapping("/{id}")
     public Formation updateFormation(@PathVariable int id, @RequestBody Formation formation) {
         formation.setId(id);
@@ -89,7 +94,10 @@ public class FormationController {
     public List<Formation> getFormationsByCategory(@PathVariable FormationCategory category) {
         return formationService.getFormationsByCategory(category);
     }
-
+    @GetMapping("/completed/{userId}")
+    public List<Formation> getCompletedFormations(@PathVariable Long userId) {
+        return formationService.getCompletedFormations(userId);
+    }
     @PostMapping("/{formationId}/uploadPlanning")
     public ResponseEntity<String> uploadPlanning(@PathVariable int formationId, @RequestParam("file") MultipartFile file) {
         Formation formation = formationService.retrieveFormation(formationId)
