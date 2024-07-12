@@ -77,11 +77,20 @@ public class PropositionController {
         return ResponseEntity.ok(savedProposition);
     }
 
-    @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Proposition> updateProposition(@PathVariable Long id, @RequestBody Proposition propositionDetails) {
-        Proposition updatedProposition = propositionService.updateProposition(id, propositionDetails);
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<Proposition> updateProposition(
+            @PathVariable Long id,
+            @RequestParam("detail") String detail,
+            @RequestParam("amount") double amount,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "removeExistingFile", required = false, defaultValue = "false") boolean removeExistingFile) {
+
+        Proposition updatedProposition = propositionService.updateProposition(id, detail, amount, file, removeExistingFile);
         return ResponseEntity.ok(updatedProposition);
     }
+
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProposition(@PathVariable Long id) {
@@ -182,5 +191,10 @@ public class PropositionController {
         return propositionService.getApprovedPropositions();
     }
 
+    @DeleteMapping("/{id}/file")
+    public ResponseEntity<Void> deletePropositionFile(@PathVariable Long id) {
+        propositionService.deleteFileFromProposition(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

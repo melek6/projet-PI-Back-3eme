@@ -17,7 +17,7 @@ public interface IPropositionService {
 
     Proposition addProposition(Proposition proposition);
 
-    Proposition updateProposition(Long id, Proposition propositionDetails);
+    Proposition updateProposition(Long id, String detail, double amount, MultipartFile file, boolean removeExistingFile);
 
     void deleteProposition(Long id);
 
@@ -40,4 +40,7 @@ public interface IPropositionService {
     Optional<Proposition> getPropositionById(Long id);
 
     List<PropositionDTO> getApprovedPropositions();
+
+    void deleteFileFromProposition(Long id);
+
 }
