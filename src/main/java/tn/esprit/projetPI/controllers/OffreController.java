@@ -1,4 +1,5 @@
 package tn.esprit.projetPI.controllers;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,11 +33,13 @@ public class OffreController {
         Offre offre = offreService.getOffreById(id);
         return new ResponseEntity<>(offre, offre != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
+
     @GetMapping("getOffreByIduser/{id}")
     public ResponseEntity<List<Offre>> getOffreByIduser(@PathVariable("id") int id) {
         List<Offre> offre = offreService.getOffreByIduser(id);
         return new ResponseEntity<>(offre, offre != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Offre> updateOffre(@PathVariable("id") int id, @RequestBody Offre offre) {
         Offre updatedOffre = offreService.updateOffre(id, offre);
@@ -47,5 +50,18 @@ public class OffreController {
     public ResponseEntity<Void> deleteOffre(@PathVariable("id") int id) {
         offreService.deleteOffre(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // Ajouter les endpoints pour les offres quotidiennes et hebdomadaires
+    @GetMapping("/daily")
+    public ResponseEntity<List<Offre>> getDailyOffers() {
+        List<Offre> dailyOffers = offreService.getDailyOffers();
+        return new ResponseEntity<>(dailyOffers, HttpStatus.OK);
+    }
+
+    @GetMapping("/weekly")
+    public ResponseEntity<List<Offre>> getWeeklyOffers() {
+        List<Offre> weeklyOffers = offreService.getWeeklyOffers();
+        return new ResponseEntity<>(weeklyOffers, HttpStatus.OK);
     }
 }
