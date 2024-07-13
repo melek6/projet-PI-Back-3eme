@@ -30,4 +30,6 @@ public interface FormationService {
     List<Formation> getCompletedFormations(Long userId);
 
     List<Formation> getCompletedFormationsByUser(Long userId);
+
+    void updatePlanningUrl(int formationId, String fileUrl);
 }

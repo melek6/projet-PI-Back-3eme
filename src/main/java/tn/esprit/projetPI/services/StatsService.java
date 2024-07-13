@@ -10,9 +10,7 @@ import tn.esprit.projetPI.repository.ProjectRepository;
 import tn.esprit.projetPI.repository.PropositionRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class StatsService implements IStatsService {
@@ -31,7 +29,7 @@ public class StatsService implements IStatsService {
         List<Object[]> results = projectRepository.countProjectsByCategory();
         Map<String, Long> categoryCounts = new HashMap<>();
         for (Object[] result : results) {
-            categoryCounts.put((String) result[0], (Long) result[1]);
+            categoryCounts.put(result[0].toString(), (Long) result[1]); // Convert enum to string
         }
         return categoryCounts;
     }
@@ -68,6 +66,16 @@ public class StatsService implements IStatsService {
 
     @Override
     public List<ProjectCreatedOverTimeDTO> getProjectsCreatedOverTime() {
-        return projectRepository.findProjectsCreatedOverTime();
+        List<Object[]> results = projectRepository.findProjectsCreatedOverTimeNative();
+        List<ProjectCreatedOverTimeDTO> projectsCreatedOverTimeDTOs = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Date date = (Date) result[0];
+            Long projectCount = ((Number) result[1]).longValue();
+            projectsCreatedOverTimeDTOs.add(new ProjectCreatedOverTimeDTO(date, projectCount));
+        }
+
+        return projectsCreatedOverTimeDTOs;
     }
+
 }

@@ -41,7 +41,7 @@ public class Project implements Serializable {
     @DecimalMin(value = "0.0", inclusive = false, message = "Budget must be greater than zero")
     private double budget;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime  createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -64,6 +64,7 @@ public class Project implements Serializable {
         this.deadline = deadline;
         this.budget = budget;
         this.user = user;
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and setters

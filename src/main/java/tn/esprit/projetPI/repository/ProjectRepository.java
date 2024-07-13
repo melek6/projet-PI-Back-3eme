@@ -33,10 +33,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT p.category, COUNT(p) FROM Project p GROUP BY p.category")
     List<Object[]> countProjectsByCategory();
-
     @Query("SELECT new tn.esprit.projetPI.dto.ProjectActivityDTO('Creation', p.title, p.createdAt) FROM Project p ORDER BY p.createdAt DESC")
     List<ProjectActivityDTO> findRecentProjectActivities();
 
-    @Query("SELECT new tn.esprit.projetPI.dto.ProjectCreatedOverTimeDTO(FUNCTION('DATE', p.createdAt), COUNT(p)) FROM Project p GROUP BY FUNCTION('DATE', p.createdAt)")
-    List<ProjectCreatedOverTimeDTO> findProjectsCreatedOverTime();
+    @Query(value = "SELECT DATE(p.created_at) as date, COUNT(p.id) as projectCount " +
+            "FROM Project p GROUP BY DATE(p.created_at)", nativeQuery = true)
+    List<Object[]> findProjectsCreatedOverTimeNative();
 }
