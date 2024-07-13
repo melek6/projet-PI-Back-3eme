@@ -11,4 +11,6 @@ public interface EvaluationService {
     Evaluation updateEvaluation(Evaluation evaluation);
     Optional<Evaluation> getEvaluationById(int id);
     void deleteEvaluation(int id);
+
+    List<Evaluation> getEvaluationsByFormation(int formationId);
 }
