@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Configuration
-public class FirebaseConfig {
+public class FirebaseConfigma {
 
     private final ResourceLoader resourceLoader;
 
-    public FirebaseConfig(ResourceLoader resourceLoader) {
+    public FirebaseConfigma(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 

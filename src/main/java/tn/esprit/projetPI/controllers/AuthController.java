@@ -1,28 +1,19 @@
 package tn.esprit.projetPI.controllers;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Path;
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tn.esprit.projetPI.models.GoogleLoginRequest;
 import tn.esprit.projetPI.payload.request.UpdateUserDTO;
 import tn.esprit.projetPI.repository.RoleRepository;
 import tn.esprit.projetPI.repository.UserRepository;
@@ -67,7 +58,7 @@ public class AuthController {
 	@Autowired
 	private UserServiceint userService;
 @Autowired
-private FirebaseStorageServiceipm firebaseStorageService;
+private FirebaseStorageServiceint firebaseStorageService;
 	@Autowired
 	private ObjectMapper objectMapper; // For JSON parsing
 @Autowired

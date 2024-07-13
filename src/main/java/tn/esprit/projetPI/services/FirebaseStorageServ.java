@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 @Service
-public class FirebaseStorageServ implements FirebaseStorageServiceipm {
+public class FirebaseStorageServ implements FirebaseStorageServiceint {
 
     private final Storage storage;
     private final String bucketName;
