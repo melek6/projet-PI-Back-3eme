@@ -8,6 +8,7 @@ import tn.esprit.projetPI.repository.QuizRepository;
 import tn.esprit.projetPI.repository.TentativeRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -73,6 +74,7 @@ public class QuestionImpl {
             tentative.setQuizId(quizId);
             tentative.setUserId(idUser);
            tentative.setScore(score);
+            tentative.setAttemptDate(LocalDateTime.now());
             tentativeRepository.save(tentative);
         }
     }

@@ -3,6 +3,7 @@ package tn.esprit.projetPI.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -10,7 +11,7 @@ public class Tentative {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Date attemptDate;
+    private LocalDateTime attemptDate;
     private Long score;
     private Long userId;
     private Long quizId;
@@ -29,7 +30,7 @@ public class Tentative {
         return id;
     }
 
-    public Date getAttemptDate() {
+    public LocalDateTime getAttemptDate() {
         return attemptDate;
     }
 
@@ -56,7 +57,7 @@ public class Tentative {
         this.id = id;
     }
 
-    public void setAttemptDate(Date attemptDate) {
+    public void setAttemptDate(LocalDateTime attemptDate) {
         this.attemptDate = attemptDate;
     }
 
