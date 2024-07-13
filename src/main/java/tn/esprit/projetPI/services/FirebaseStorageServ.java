@@ -12,13 +12,13 @@ import java.io.InputStream;
 import java.util.UUID;
 
 @Service
-public class FirebaseStorageService implements FirebaseStorageServiceipm {
+public class FirebaseStorageServ implements FirebaseStorageServiceipm {
 
     private final Storage storage;
     private final String bucketName;
 
     @Autowired
-    public FirebaseStorageService(ResourceLoader resourceLoader) throws IOException {
+    public FirebaseStorageServ(ResourceLoader resourceLoader) throws IOException {
         InputStream serviceAccount = resourceLoader.getResource("classpath:serviceAccountKey.json").getInputStream();
         GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
         this.storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
