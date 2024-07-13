@@ -1,5 +1,7 @@
 package tn.esprit.projetPI.payload.request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Set;
 
 import javax.validation.constraints.*;
@@ -21,6 +23,33 @@ public class SignupRequest {
     private String password;
     private Double latitude;
     private Double longitude;
+    private MultipartFile attestation; // Add this field
+    private String phone;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAdresse() {
+        return adresse;
+    }
+
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+
+    private String adresse;
+    public MultipartFile getAttestation() {
+        return attestation;
+    }
+
+    public void setAttestation(MultipartFile attestation) {
+        this.attestation = attestation;
+    }
 
     public Double getLatitude() {
         return latitude;

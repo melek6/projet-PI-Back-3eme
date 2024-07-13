@@ -24,6 +24,20 @@ public class AdminController {
     PasswordEncoder encoder;
     @Autowired
     private UserServiceint userService;
+    @GetMapping("/total")
+    public Long getTotalUsers() {
+        return userService.getTotalUsers();
+    }
+
+    @GetMapping("/blocked")
+    public Long getBlockedUsers() {
+        return userService.getBlockedUsers();
+    }
+
+    @GetMapping("/moderators")
+    public Long getModerators() {
+        return userService.getModerators();
+    }
     @PostMapping("/addUser")
     public ResponseEntity<?> addUser(@RequestBody UserRequest userRequest) {
         Set<ERole> roles = new HashSet<>();
@@ -60,7 +74,11 @@ public class AdminController {
         List<User> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
-
+    @GetMapping("/blocked-moderators")
+    public ResponseEntity<List<User>> getBlockedModerators() {
+        List<User> blockedModerators = userService.getBlockedModerators();
+        return ResponseEntity.ok(blockedModerators);
+    }
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
         user.setId(id);

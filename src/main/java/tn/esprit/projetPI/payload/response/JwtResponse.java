@@ -11,6 +11,24 @@ public class JwtResponse {
 	private boolean blocked;
 	private List<String> roles;
 	private String profilePictureUrl;
+	private String phone;
+	private String adresse;
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getAdresse() {
+		return adresse;
+	}
+
+	public void setAdresse(String adresse) {
+		this.adresse = adresse;
+	}
 
 	public String getProfilePictureUrl() {
 		return profilePictureUrl;
@@ -28,7 +46,15 @@ public class JwtResponse {
 		this.blocked = blocked;
 	}
 
-	public JwtResponse(String accessToken, Long id, String username, String email,boolean blocked, List<String> roles,String profilePictureUrl) {
+	public JwtResponse(String accessToken,
+					   Long id,
+					   String username,
+					   String email,
+					   boolean blocked,
+					   List<String> roles,
+					   String profilePictureUrl,
+					   String phone,
+					   String adresse) {
 		this.token = accessToken;
 		this.id = id;
 		this.username = username;
@@ -36,6 +62,8 @@ public class JwtResponse {
 		this.blocked=blocked;
 		this.roles = roles;
 		this.profilePictureUrl=profilePictureUrl;
+		this.phone=phone;
+		this.adresse=adresse;
 	}
 
 	public JwtResponse(String username,String email,List<String> roles) {

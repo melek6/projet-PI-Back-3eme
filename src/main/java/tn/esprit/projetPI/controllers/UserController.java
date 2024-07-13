@@ -2,16 +2,23 @@ package tn.esprit.projetPI.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.projetPI.models.BlogPost;
 import tn.esprit.projetPI.models.User;
 import tn.esprit.projetPI.repository.UserRepository;
 import tn.esprit.projetPI.services.UserServiceint;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -67,5 +74,6 @@ public class UserController {
                                            @RequestParam Double longitude) {
         return userService.findNearestModerators(latitude, longitude);
     }
+
 }
 

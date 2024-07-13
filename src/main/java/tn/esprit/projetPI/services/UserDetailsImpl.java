@@ -24,6 +24,24 @@ public class UserDetailsImpl implements UserDetails {
 	@JsonIgnore
 	private String password;
 	private String profilePictureUrl;
+	private String phone;
+	private String adresse;
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getAdresse() {
+		return adresse;
+	}
+
+	public void setAdresse(String adresse) {
+		this.adresse = adresse;
+	}
 
 	public String getProfilePictureUrl() {
 		return profilePictureUrl;
@@ -35,7 +53,14 @@ public class UserDetailsImpl implements UserDetails {
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String username, String email, String password,boolean blocked,String profilePictureUrl,
+	public UserDetailsImpl(Long id,
+						   String username,
+						   String email,
+						   String password,
+						   boolean blocked,
+						   String profilePictureUrl,
+			String phone,
+			String adresse,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
@@ -44,6 +69,8 @@ public class UserDetailsImpl implements UserDetails {
 		this.authorities = authorities;
 		this.blocked =blocked;
 		this.profilePictureUrl=profilePictureUrl;
+		this.phone=phone;
+		this.adresse=adresse;
 	}
 
 	public static UserDetailsImpl build(User user) {
@@ -58,6 +85,8 @@ public class UserDetailsImpl implements UserDetails {
 				user.getPassword(),
 				user.isBlocked(),
 				user.getProfilePictureUrl(),
+				user.getPhone(),
+				user.getAdresse(),
 				authorities);
 	}
 

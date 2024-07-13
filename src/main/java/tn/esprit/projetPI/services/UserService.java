@@ -1,18 +1,22 @@
 package tn.esprit.projetPI.services;
 
+import com.nimbusds.oauth2.sdk.token.Tokens;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tn.esprit.projetPI.controllers.ResourceNotFoundException;
+import tn.esprit.projetPI.models.BlogPost;
 import tn.esprit.projetPI.models.ERole;
 import tn.esprit.projetPI.models.Role;
 import tn.esprit.projetPI.models.User;
+import tn.esprit.projetPI.payload.response.JwtResponse;
+import tn.esprit.projetPI.payload.response.MessageResponse;
+import tn.esprit.projetPI.repository.BlogPostRepository;
 import tn.esprit.projetPI.repository.RoleRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +29,21 @@ public class UserService implements UserServiceint{
     private RoleRepository roleRepository;
     @Autowired
     private EmailService emailService;
+
     @Autowired
-    private PasswordEncoder encoder;
+    private PasswordEncoder passwordEncoder;
+
+    public Long getTotalUsers() {
+        return userRepository.countTotalUsers();
+    }
+
+    public Long getBlockedUsers() {
+        return userRepository.countBlockedUsers();
+    }
+
+    public Long getModerators() {
+        return userRepository.countModerators();
+    }
     @Override
     public User addUser(String username, String email, String password, Set<ERole> roles) {
         User user = new User();
@@ -109,6 +126,39 @@ public class UserService implements UserServiceint{
         double distance = R * c; // convert to kilometers
 
         return distance;
+    }
+
+    public User updateUser(Long id, String username, String email, String phone, String adresse) {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setUsername(username);
+            user.setEmail(email);
+            user.setPhone(phone);
+            user.setAdresse(adresse);
+            return userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found with id " + id);
+        }
+    }
+
+
+    public List<User> getBlockedModerators() {
+        return userRepository.findBlockedUsersByRole(ERole.ROLE_MODERATOR);
+    }
+    public MessageResponse changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->new  RuntimeException("Error: Invalid verification token."));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return new MessageResponse("Error: Old password is incorrect!");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return new MessageResponse("Password changed successfully!");
     }
 }
 

@@ -35,10 +35,41 @@ public class User {
 	private String email;
 	private boolean blocked;
 	private String profilePictureUrl;
+	private String phone;
+	private String adresse;
+
+
+
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getAdresse() {
+		return adresse;
+	}
+
+	public void setAdresse(String adresse) {
+		this.adresse = adresse;
+	}
+
 	@Column(name = "verification_token")
 	private String verificationToken;
 	private Double latitude;
 	private Double longitude;
+	private String attestationUrl;  // Add this field
+
+	public String getAttestationUrl() {
+		return attestationUrl;
+	}
+
+	public void setAttestationUrl(String attestationUrl) {
+		this.attestationUrl = attestationUrl;
+	}
 
 	public Double getLatitude() {
 		return latitude;
@@ -113,7 +144,7 @@ public class User {
 		this.id = id;
 	}
 
-	public String getUsername() {
+	public  String getUsername() {
 		return username;
 	}
 
@@ -129,7 +160,7 @@ public class User {
 		this.email = email;
 	}
 
-	public String getPassword() {
+	public  String getPassword() {
 		return password;
 	}
 
