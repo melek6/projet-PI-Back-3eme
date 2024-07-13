@@ -17,7 +17,9 @@ public class EvaluationServiceImp implements EvaluationService {
     public EvaluationServiceImp(EvaluationRepository evaluationRepository) {
         this.evaluationRepository = evaluationRepository;
     }
-
+    public List<Evaluation> getEvaluationsByFormation(int formationId) {
+        return evaluationRepository.findByFormationId(formationId);
+    }
     @Override
     public List<Evaluation> getAllEvaluations() {
         return evaluationRepository.findAll();

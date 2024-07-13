@@ -79,16 +79,16 @@ public class FormationServiceImp implements FormationService {
     }
 
     @Override
-    public Evaluation addEvaluationToFormation(int formationId, Evaluation evaluation) {
-        Optional<Formation> optionalFormation = formationRepository.findById(formationId);
-        if (optionalFormation.isPresent()) {
-            Formation formation = optionalFormation.get();
-            evaluation.setFormation(formation);
-            return evaluationRepository.save(evaluation);
-        } else {
+    public Evaluation addEvaluationToFormation(int formationId, Evaluation evaluation) throws ResourceNotFoundException {
+        Optional<Formation> formationOptional = formationRepository.findById(formationId);
+        if (!formationOptional.isPresent()) {
             throw new ResourceNotFoundException("Formation not found with id: " + formationId);
         }
+        Formation formation = formationOptional.get();
+        evaluation.setFormation(formation);
+        return evaluationRepository.save(evaluation);
     }
+
 
     @Override
     public List<Evaluation> getEvaluationsForFormation(int formationId) {
@@ -154,4 +154,6 @@ public class FormationServiceImp implements FormationService {
     public List<Formation> getRecommendedFormations() {
         return formationRepository.findTopFormationsByAverageScore().subList(0, 5);  // Récupère les 5 meilleures formations
     }
+
+
 }

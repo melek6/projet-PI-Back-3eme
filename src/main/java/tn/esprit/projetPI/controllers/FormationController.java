@@ -21,10 +21,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/formations")
 public class FormationController {
-@Autowired
-    private  FormationService formationService;
-@Autowired
-    private  EvaluationService evaluationService;
+    @Autowired
+    private FormationService formationService;
+    @Autowired
+    private EvaluationService evaluationService;
+
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -73,11 +74,13 @@ public class FormationController {
 
 
 
-    @PostMapping("/{formationId}/evaluations")
-    public Evaluation addEvaluationToFormation(@PathVariable int formationId, @RequestBody Evaluation evaluation) {
-        Formation formation = formationService.retrieveFormation(formationId).orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
-        evaluation.setFormation(formation);
-        return evaluationService.addEvaluation(evaluation);
+    @GetMapping("/{formationId}/evaluations")
+    public ResponseEntity<List<Evaluation>> getEvaluationsByFormation(@PathVariable int formationId) {
+        List<Evaluation> evaluations = evaluationService.getEvaluationsByFormation(formationId);
+        if (evaluations.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(evaluations, HttpStatus.OK);
     }
 
     @PostMapping("/category/{category}")
@@ -119,6 +122,15 @@ public class FormationController {
         } catch (IOException e) {
             e.printStackTrace();
             return new ResponseEntity<>("Failed to upload '" + file.getOriginalFilename() + "'", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PostMapping("/{formationId}/evaluations")
+    public ResponseEntity<Evaluation> addEvaluationToFormation(@PathVariable int formationId, @RequestBody Evaluation evaluation) {
+        try {
+            Evaluation createdEvaluation = formationService.addEvaluationToFormation(formationId, evaluation);
+            return new ResponseEntity<>(createdEvaluation, HttpStatus.CREATED);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
     }
