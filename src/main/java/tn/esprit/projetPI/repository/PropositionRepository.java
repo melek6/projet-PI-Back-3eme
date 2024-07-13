@@ -1,6 +1,7 @@
 package tn.esprit.projetPI.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tn.esprit.projetPI.dto.PropositionDTO;
 import tn.esprit.projetPI.models.Proposition;
@@ -15,5 +16,8 @@ public interface PropositionRepository extends JpaRepository<Proposition, Long> 
 
     List<Proposition> findByUserId(Long userId);
 
+    @Query("SELECT p.status, COUNT(p) FROM Proposition p GROUP BY p.status")
+    List<Object[]> countPropositionsByStatus();
 
+    long countByStatus(String status);
 }

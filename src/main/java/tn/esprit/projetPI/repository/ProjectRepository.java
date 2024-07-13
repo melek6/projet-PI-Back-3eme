@@ -1,7 +1,12 @@
 package tn.esprit.projetPI.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import tn.esprit.projetPI.dto.ProjectActivityDTO;
+import tn.esprit.projetPI.dto.ProjectCreatedOverTimeDTO;
+import tn.esprit.projetPI.dto.TopProjectOwnerDTO;
+import tn.esprit.projetPI.dto.UserActivityDTO;
 import tn.esprit.projetPI.models.Project;
 import tn.esprit.projetPI.models.ProjectCategory;
 import tn.esprit.projetPI.models.User;
@@ -18,4 +23,20 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findByBudgetGreaterThanEqual(Double minBudget);
     List<Project> findByBudgetLessThanEqual(Double maxBudget);
     List<Project> findByUser(User user);
+
+
+
+
+
+    @Query("SELECT new tn.esprit.projetPI.dto.TopProjectOwnerDTO(u.username, COUNT(p), SUM(p.budget)) FROM Project p JOIN p.user u GROUP BY u.username ORDER BY COUNT(p) DESC, SUM(p.budget) DESC")
+    List<TopProjectOwnerDTO> findTopProjectOwners();
+
+    @Query("SELECT p.category, COUNT(p) FROM Project p GROUP BY p.category")
+    List<Object[]> countProjectsByCategory();
+
+    @Query("SELECT new tn.esprit.projetPI.dto.ProjectActivityDTO('Creation', p.title, p.createdAt) FROM Project p ORDER BY p.createdAt DESC")
+    List<ProjectActivityDTO> findRecentProjectActivities();
+
+    @Query("SELECT new tn.esprit.projetPI.dto.ProjectCreatedOverTimeDTO(FUNCTION('DATE', p.createdAt), COUNT(p)) FROM Project p GROUP BY FUNCTION('DATE', p.createdAt)")
+    List<ProjectCreatedOverTimeDTO> findProjectsCreatedOverTime();
 }
