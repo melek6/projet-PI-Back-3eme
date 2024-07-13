@@ -2,6 +2,8 @@ package tn.esprit.projetPI.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.projetPI.models.Formation;
 import tn.esprit.projetPI.models.Evaluation;
 import tn.esprit.projetPI.models.FormationCategory;
+import tn.esprit.projetPI.services.FirebaseStorageService;
 import tn.esprit.projetPI.services.FormationService;
 import tn.esprit.projetPI.services.EvaluationService;
 
@@ -26,6 +29,9 @@ public class FormationController {
     @Autowired
     private EvaluationService evaluationService;
 
+
+    @Autowired
+    private FirebaseStorageService firebaseStorageService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -101,27 +107,52 @@ public class FormationController {
     public List<Formation> getCompletedFormations(@PathVariable Long userId) {
         return formationService.getCompletedFormations(userId);
     }
-    @PostMapping("/{formationId}/uploadPlanning")
-    public ResponseEntity<String> uploadPlanning(@PathVariable int formationId, @RequestParam("file") MultipartFile file) {
-        Formation formation = formationService.retrieveFormation(formationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+//    @PostMapping("/{formationId}/uploadPlanning")
+//    public ResponseEntity<String> uploadPlanning(@PathVariable int formationId, @RequestParam("file") MultipartFile file) {
+//        Formation formation = formationService.retrieveFormation(formationId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+//
+//        if (file.isEmpty()) {
+//            return new ResponseEntity<>("Please select a file to upload.", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        try {
+//            byte[] bytes = file.getBytes();
+//            Path path = Paths.get(uploadDir + file.getOriginalFilename());
+//            Files.write(path, bytes);
+//
+//            formation.setPlanning(file.getOriginalFilename());
+//            formationService.updateFormation(formation);
+//
+//            return new ResponseEntity<>("You successfully uploaded '" + file.getOriginalFilename() + "'", HttpStatus.OK);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>("Failed to upload '" + file.getOriginalFilename() + "'", HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
-        if (file.isEmpty()) {
-            return new ResponseEntity<>("Please select a file to upload.", HttpStatus.BAD_REQUEST);
-        }
-
+    @PostMapping(value = "/{formationId}/uploadPlanning", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadPlanning(
+            @PathVariable int formationId,
+            @RequestParam("file") MultipartFile file) {
         try {
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(uploadDir + file.getOriginalFilename());
-            Files.write(path, bytes);
-
-            formation.setPlanning(file.getOriginalFilename());
-            formationService.updateFormation(formation);
-
-            return new ResponseEntity<>("You successfully uploaded '" + file.getOriginalFilename() + "'", HttpStatus.OK);
+            String fileUrl = firebaseStorageService.uploadFile(file);
+            formationService.updatePlanningUrl(formationId, fileUrl);
+            return ResponseEntity.ok("File uploaded successfully: " + fileUrl);
         } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload '" + file.getOriginalFilename() + "'", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(500).body("Failed to upload file: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/downloadPlanning/{fileName}")
+    public ResponseEntity<ByteArrayResource> downloadPlanning(@PathVariable String fileName) {
+        try {
+            ByteArrayResource resource = firebaseStorageService.downloadFile(fileName);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fileName)
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(null);
         }
     }
     @PostMapping("/{formationId}/evaluations")

@@ -15,6 +15,7 @@ import tn.esprit.projetPI.repository.FormationRepository;
 import tn.esprit.projetPI.repository.InscriptionFormationRepository;
 import tn.esprit.projetPI.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -153,6 +154,14 @@ public class FormationServiceImp implements FormationService {
     @Override
     public List<Formation> getRecommendedFormations() {
         return formationRepository.findTopFormationsByAverageScore().subList(0, 5);  // Récupère les 5 meilleures formations
+    }
+
+    @Transactional
+    public void updatePlanningUrl(int formationId, String planningUrl) {
+        Formation formation = formationRepository.findById(formationId)
+                .orElseThrow(() -> new RuntimeException("Formation not found with id: " + formationId));
+        formation.setPlanningUrl(planningUrl);
+        formationRepository.save(formation);
     }
 
 

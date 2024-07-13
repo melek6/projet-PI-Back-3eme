@@ -44,6 +44,8 @@ public class Formation implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
 
     private User user;
+
+    private String planningUrl;
     @JsonIgnore
 
     @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL)
@@ -65,6 +67,7 @@ public class Formation implements Serializable {
         this.bestSeller = bestSeller;
         this.planning = planning;
         this.trainer = trainer;
+        this.planningUrl = planningUrl;
     }
 
     // Getters and Setters
@@ -164,6 +167,17 @@ public class Formation implements Serializable {
     public void setUser(User user) {
         this.user = user;
     }
+
+
+    public String getPlanningUrl() {
+        return planningUrl;
+    }
+
+    public void setPlanningUrl(String planningUrl) {
+        this.planningUrl = planningUrl;
+    }
+
+
     public String getTrainer() {
         return trainer;
     }
